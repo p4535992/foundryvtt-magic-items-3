@@ -10,7 +10,7 @@ Fork of [Magic Items](https://gitlab.com/riccisi/foundryvtt-magic-items/), since
 To install, follow these instructions:
 
 1.  Inside Foundry, select the Game Modules tab in the Configuration and Setup menu.
-2.  Click the Install Module button and enter the following URL: https://github.com/PwQt/magic-items-2/releases/latest/download/module.json
+2.  Click the Install Module button and enter the following URL: https://github.com/PwQt/magic-items-3/releases/latest/download/module.json
 3.  Click Install and wait for installation to complete.
 
 ## Usage Instructions
@@ -109,6 +109,6 @@ Magic Items is a module for Foundry VTT by Simone and is licensed under a [Creat
 
 ## License
 
-Magic Items 2 is a module for Foundry VTT by PwQt and is licensed under [MIT License](https://github.com/PwQt/magic-items-2/blob/master/LICENSE).
+Magic Items 2 is a module for Foundry VTT by PwQt and is licensed under [MIT License](https://github.com/PwQt/magic-items-3/blob/master/LICENSE).
 
 This work is licensed under Foundry Virtual Tabletop [EULA](https://foundryvtt.com/article/license/).

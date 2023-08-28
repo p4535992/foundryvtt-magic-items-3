@@ -1,12 +1,12 @@
 {
-  "id": "magic-items-2",
+  "id": "magic-items-3",
   "title": "Magic Items 2",
   "description": "Module that adds the ability to create magical items with spells or feats that belong to the item itself, such as staffs or magic wands, which will be automatically inherited from the character who owns the item.",
   "version": "1.2.2",
   "authors": [
     {
       "name": "PwQt",
-      "url": "https://github.com/PwQt/magic-items-2",
+      "url": "https://github.com/PwQt/magic-items-3",
       "discord": "PwQt#7620"
     },
     {
@@ -119,12 +119,12 @@
     "maximum": 11
   },
   "manifestPlusVersion": "1.2.1",
-  "url": "https://github.com/PwQt/magic-items-2",
-  "manifest": "https://github.com/PwQt/magic-items-2/releases/download/1.2.2/module.json",
-  "download": "https://github.com/PwQt/magic-items-2/releases/download/1.2.2/module.zip",
-  "readme": "https://github.com/PwQt/magic-items-2/blob/master/README.md",
-  "changelog": "https://github.com/PwQt/magic-items-2/blob/master/CHANGELOG.md",
-  "bugs": "https://github.com/PwQt/magic-items-2/issues",
+  "url": "https://github.com/PwQt/magic-items-3",
+  "manifest": "https://github.com/PwQt/magic-items-3/releases/download/1.2.2/module.json",
+  "download": "https://github.com/PwQt/magic-items-3/releases/download/1.2.2/module.zip",
+  "readme": "https://github.com/PwQt/magic-items-3/blob/master/README.md",
+  "changelog": "https://github.com/PwQt/magic-items-3/blob/master/CHANGELOG.md",
+  "bugs": "https://github.com/PwQt/magic-items-3/issues",
   "allowBugReporter": true,
   "relationships": {
     "systems": [

@@ -54,10 +54,10 @@ export class MagicItemSheet {
    */
   async render() {
     if (this.actor.hasItemsFeats()) {
-      await this.renderTemplate("magic-item-feat-sheet", "magic-items-feats-content", "features");
+      await this.renderTemplate("magic-item-feat-sheet", "magic-items-3-feats-content", "features");
     }
     if (this.actor.hasItemsSpells()) {
-      await this.renderTemplate("magic-item-spell-sheet", "magic-items-spells-content", "spellbook");
+      await this.renderTemplate("magic-item-spell-sheet", "magic-items-3-spells-content", "spellbook");
     }
 
     this.actor.items
@@ -82,7 +82,7 @@ export class MagicItemSheet {
    * @returns {Promise<void>}
    */
   async renderTemplate(name, cls, tab) {
-    let template = await renderTemplate(`modules/magic-items-2/templates/${name}.html`, this.actor);
+    let template = await renderTemplate(`modules/magic-items-3/templates/${name}.html`, this.actor);
     let el = this.html.find(`.${cls}`);
     if (el.length) {
       el.replaceWith(template);

@@ -161,14 +161,14 @@
   margin-right: 4px;
 }
 
-.dnd5e.sheet.item .magic-items-content input[type="text"],
-.dnd5e.sheet.item .magic-items-content select {
+.dnd5e.sheet.item .magic-items-3-content input[type="text"],
+.dnd5e.sheet.item .magic-items-3-content select {
   height: 24px;
   border: 1px solid #7a7971;
   background: rgba(0, 0, 0, 0.05);
 }
 
-.dnd5e.sheet.item .magic-items-content .magic-item-charges {
+.dnd5e.sheet.item .magic-items-3-content .magic-item-charges {
   flex: 0.5;
 }
 
@@ -180,7 +180,7 @@
   border: 2px #828180 dashed;
 }
 
-.dnd5e.sheet.actor .magic-items-head {
+.dnd5e.sheet.actor .magic-items-3-head {
   margin-top: 10px;
 }
 
@@ -220,30 +220,30 @@
   background-image: url(/icons/svg/d20-black.svg) !important;
 }
 
-.dnd5e.sheet.item .magic-items-content select.magic-item-charges-type {
+.dnd5e.sheet.item .magic-items-3-content select.magic-item-charges-type {
   flex: 0.5;
 }
 
-.dnd5e.sheet.item .magic-items-content select.magic-item-destroy-check {
+.dnd5e.sheet.item .magic-items-3-content select.magic-item-destroy-check {
   flex: 0.4;
 }
 
-.dnd5e.sheet.item .magic-items-content select.magic-item-destroy-type {
+.dnd5e.sheet.item .magic-items-3-content select.magic-item-destroy-type {
   flex: 0.4;
   margin-left: 5px;
 }
 
-.dnd5e.sheet.item .magic-items-content select.magic-item-destroy-check:disabled {
+.dnd5e.sheet.item .magic-items-3-content select.magic-item-destroy-check:disabled {
   color: #9a9a9a;
   border-color: #dad9d9;
 }
 
-.dnd5e.sheet.item .magic-items-content select.magic-item-destroy-type:disabled {
+.dnd5e.sheet.item .magic-items-3-content select.magic-item-destroy-type:disabled {
   color: #9a9a9a;
   border-color: #dad9d9;
 }
 
-.dnd5e.sheet.item .magic-items-content input.magic-item-recharge:disabled {
+.dnd5e.sheet.item .magic-items-3-content input.magic-item-recharge:disabled {
   color: #9a9a9a;
   border-color: #dad9d9;
 }
@@ -252,7 +252,7 @@
   display: none;
 }
 
-.tidy5e.sheet.actor .magic-items-head {
+.tidy5e.sheet.actor .magic-items-3-head {
   display: none;
 }
 
@@ -262,8 +262,8 @@
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) inset !important;
 }
 
-.tidy5e.sheet.actor .magic-items-spells-content,
-.tidy5e.sheet.actor .magic-items-feats-content {
+.tidy5e.sheet.actor .magic-items-3-spells-content,
+.tidy5e.sheet.actor .magic-items-3-feats-content {
   padding: 0 !important;
   border: none !important;
   box-shadow: none !important;

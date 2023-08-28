@@ -78,8 +78,8 @@ export class MagicItemTab {
   async render() {
     this.magicItem.sort();
 
-    let template = await renderTemplate("modules/magic-items-2/templates/magic-item-tab.html", this.magicItem);
-    let el = this.html.find(`.magic-items-content`);
+    let template = await renderTemplate("modules/magic-items-3/templates/magic-item-tab.html", this.magicItem);
+    let el = this.html.find(`.magic-items-3-content`);
     if (el.length) {
       el.replaceWith(template);
     } else {
@@ -142,11 +142,11 @@ export class MagicItemTab {
   }
 
   handleEvents() {
-    this.html.find('.magic-items-content input[type="text"]').change((evt) => {
+    this.html.find('.magic-items-3-content input[type="text"]').change((evt) => {
       this.activate = true;
       this.render();
     });
-    this.html.find(".magic-items-content select").change((evt) => {
+    this.html.find(".magic-items-3-content select").change((evt) => {
       this.activate = true;
       this.render();
     });
