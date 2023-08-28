@@ -1,5 +1,6 @@
 const CONSTANTS = {
   MODULE_ID: "magic-items-3",
+  MODULE_FLAG: "magicitems",
   PATH: `modules/magic-items/`,
   FLAGS: {
     itemSpells: "item-spells",

@@ -49,10 +49,9 @@ export class MagicItemTab {
 
       let include = false;
       // TODO
-      //   try {
-      //     include = !!game.settings.get(CONSTANTS.MODULE_ID, `includeItemType${app.item.type.titleCase()}`);
-      //   } catch {}
-
+      // try {
+      //   include = !!game.settings.get(CONSTANTS.MODULE_ID, `includeItemType${app.item.type.titleCase()}`);
+      // } catch {}
       let acceptedTypes = ["weapon", "equipment", "consumable", "tool", "backpack", "feat"];
       if (acceptedTypes.includes(item.type)) {
         include = true;
@@ -309,28 +308,28 @@ export class MagicItemTab {
       this.magicItem.removeTable(evt.target.getAttribute("data-table-idx"));
       this.render();
     });
-    this.magicItem.spells.forEach((spell, idx) => {
-      this.html.find(`select[name="flags.magicitems.spells.${idx}.level"]`).change((evt) => {
+    this.magicItem.itemSpellItemMap.forEach((spell, idx) => {
+      this.html.find(`select[name="flags.magicitems.item-spells.${idx}.level"]`).change((evt) => {
         spell.level = parseInt(evt.target.value);
         this.render();
       });
-      this.html.find(`input[name="flags.magicitems.spells.${idx}.consumption"]`).change((evt) => {
+      this.html.find(`input[name="flags.magicitems.item-spells.${idx}.consumption"]`).change((evt) => {
         spell.consumption = MAGICITEMS.numeric(evt.target.value, spell.consumption);
         this.render();
       });
-      this.html.find(`select[name="flags.magicitems.spells.${idx}.upcast"]`).change((evt) => {
+      this.html.find(`select[name="flags.magicitems.item-spells.${idx}.upcast"]`).change((evt) => {
         spell.upcast = parseInt(evt.target.value);
         this.render();
       });
-      this.html.find(`input[name="flags.magicitems.spells.${idx}.upcastCost"]`).change((evt) => {
+      this.html.find(`input[name="flags.magicitems.item-spells.${idx}.upcastCost"]`).change((evt) => {
         spell.upcastCost = MAGICITEMS.numeric(evt.target.value, spell.cost);
         this.render();
       });
-      this.html.find(`input[name="flags.magicitems.spells.${idx}.flatDc"]`).click((evt) => {
+      this.html.find(`input[name="flags.magicitems.item-spells.${idx}.flatDc"]`).click((evt) => {
         spell.flatDc = evt.target.checked;
         this.render();
       });
-      this.html.find(`input[name="flags.magicitems.spells.${idx}.dc"]`).change((evt) => {
+      this.html.find(`input[name="flags.magicitems.item-spells.${idx}.dc"]`).change((evt) => {
         spell.dc = evt.target.value;
         this.render();
       });
@@ -338,12 +337,12 @@ export class MagicItemTab {
         spell.renderSheet();
       });
     });
-    this.magicItem.feats.forEach((feat, idx) => {
-      this.html.find(`select[name="flags.magicitems.feats.${idx}.effect"]`).change((evt) => {
+    this.magicItem.itemFeatItemMap.forEach((feat, idx) => {
+      this.html.find(`select[name="flags.magicitems.item-feats.${idx}.effect"]`).change((evt) => {
         feat.effect = evt.target.value;
         this.render();
       });
-      this.html.find(`input[name="flags.magicitems.feats.${idx}.consumption"]`).change((evt) => {
+      this.html.find(`input[name="flags.magicitems.item-feats.${idx}.consumption"]`).change((evt) => {
         feat.consumption = MAGICITEMS.numeric(evt.target.value, feat.consumption);
         this.render();
       });
@@ -351,8 +350,8 @@ export class MagicItemTab {
         feat.renderSheet();
       });
     });
-    this.magicItem.tables.forEach((table, idx) => {
-      this.html.find(`input[name="flags.magicitems.tables.${idx}.consumption"]`).change((evt) => {
+    this.magicItem.itemTableItemMap.forEach((table, idx) => {
+      this.html.find(`input[name="flags.magicitems.item-tables.${idx}.consumption"]`).change((evt) => {
         table.consumption = MAGICITEMS.numeric(evt.target.value, table.consumption);
       });
       this.html.find(`a[data-table-idx="${idx}"]`).click((evt) => {
@@ -411,12 +410,16 @@ export class MagicItemTab {
    * Renders the spell tab template to be injected
    */
   async _renderSpellsList() {
-    const itemSpellsArray = [...(await this.itemWithSpellsItem.itemSpellItemMap).values()];
+    const itemSpellsArray = [...(await this.itemWithSpellsItem.itemSpellItemMap)?.values()];
+    const itemFeatsArray = [...(await this.itemWithSpellsItem.itemFeatItemMap)?.values()];
+    const itemTablesArray = [...(await this.itemWithSpellsItem.itemTableItemMap)?.values()];
 
     log(false, "rendering list", itemSpellsArray);
 
     this.magicItem = mergeObject(this.magicItem, {
       itemSpells: itemSpellsArray,
+      itemFeats: itemFeatsArray,
+      itemTables: itemTablesArray,
       config: {
         limitedUsePeriods: CONFIG.DND5E.limitedUsePeriods,
         abilities: CONFIG.DND5E.abilities,
@@ -530,7 +533,7 @@ export class MagicItemTab {
   async _handleItemClick(event) {
     const { itemId } = $(event.currentTarget).parents("[data-item-id]").data();
     const item = this.itemWithSpellsItem.itemSpellItemMap.get(itemId);
-    log(false, "_handleItemClick", !!item.isOwned && !!item.isOwner);
+    log("_handleItemClick" + " " + !!item.isOwned && !!item.isOwner);
     item?.sheet.render(true, {
       editable: !!item.isOwned && !!item.isOwner,
     });
@@ -542,7 +545,7 @@ export class MagicItemTab {
   async _handleItemDeleteClick(event) {
     const { itemId } = $(event.currentTarget).parents("[data-item-id]").data();
 
-    log(false, "deleting", itemId, this.itemWithSpellsItem.itemSpellItemMap);
+    log("deleting" + " " + itemId + " " + this.itemWithSpellsItem.itemSpellItemMap);
 
     // set the flag to re-open this tab when the update completes
     this._shouldOpenSpellsTab = true;
@@ -555,7 +558,7 @@ export class MagicItemTab {
   async _handleItemDestroyClick(event) {
     const { itemId } = $(event.currentTarget).parents("[data-item-id]").data();
 
-    log(false, "destroying", itemId, this.itemWithSpellsItem.itemSpellItemMap);
+    log("destroying" + " " + itemId + " " + this.itemWithSpellsItem.itemSpellItemMap);
 
     // set the flag to re-open this tab when the update completes
     this._shouldOpenSpellsTab = true;
@@ -585,7 +588,8 @@ export class MagicItemTab {
     log("RENDERING");
 
     this.editable = data.editable;
-    this.magicItem = new MagicItem(this.item.flags.magicitems);
+    // this.magicItem = new MagicItem(this.item.flags.magicitems);
+    this.magicItem = new MagicItem(this.item);
 
     // Update the nav menu
     const spellsTabButton = $(

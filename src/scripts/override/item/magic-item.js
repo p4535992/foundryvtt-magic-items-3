@@ -61,19 +61,19 @@ const FakeEmptyTable = (uuid, parent) =>
  */
 export class MagicItem {
   constructor(item) {
-    const flags = item.flags;
+    const flags = item.flags.magicitems;
     const data = mergeObject(this.defaultData(), flags || {}, { inplace: false });
 
     this.item = item;
 
-    this._itemSpellFlagMap = null;
-    this._itemSpellItems = null;
+    this._itemSpellFlagMap = data._itemSpellFlagMap ?? new Map();
+    this._itemSpellItems = data._itemSpellItems ?? new Map();
 
-    this._itemFeatFlagMap = null;
-    this._itemFeatItems = null;
+    this._itemFeatFlagMap = data._itemFeatFlagMap ?? new Map();
+    this._itemFeatItems = data._itemFeatItems ?? new Map();
 
-    this._itemTableFlagMap = null;
-    this._itemTableItems = null;
+    this._itemTableFlagMap = data._itemTableFlagMap ?? new Map();
+    this._itemTableItems = data._itemTableItems ?? new Map();
 
     /* ==================================== */
     this.enabled = data.enabled;
@@ -130,7 +130,11 @@ export class MagicItem {
    * Raw flag data
    */
   get itemSpellList() {
-    return this.item.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemSpells) ?? [];
+    try {
+      return this.item.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells) ?? [];
+    } catch (e) {
+      return getProperty(this.item, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemSpells}`) ?? [];
+    }
   }
 
   /**
@@ -160,7 +164,11 @@ export class MagicItem {
    * Raw flag data
    */
   get itemFeatList() {
-    return this.item.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemFeats) ?? [];
+    try {
+      return this.item.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemFeats) ?? [];
+    } catch (e) {
+      return getProperty(this.item, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemFeats}`) ?? [];
+    }
   }
 
   /**
@@ -190,7 +198,11 @@ export class MagicItem {
    * Raw flag data
    */
   get itemTableList() {
-    return this.item.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemTables) ?? [];
+    try {
+      return this.item.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemTables) ?? [];
+    } catch (e) {
+      return getProperty(this.item, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemTables}`) ?? [];
+    }
   }
 
   /**
@@ -235,14 +247,14 @@ export class MagicItem {
     }
 
     // this exists if the 'child' spell has been created on an actor
-    if (original.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.parentItem) === this.item.uuid) {
+    if (original.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem) === this.item.uuid) {
       return original;
     }
 
     // these changes are always applied
     const fixedChanges = {
       ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
-      [`flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
+      [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
       ["system.preparation.mode"]: "atwill",
     };
 
@@ -285,14 +297,14 @@ export class MagicItem {
     }
 
     // this exists if the 'child' spell has been created on an actor
-    if (original.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.parentItem) === this.item.uuid) {
+    if (original.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem) === this.item.uuid) {
       return original;
     }
 
     // these changes are always applied
     const fixedChanges = {
       ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
-      [`flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
+      [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
       // ["system.preparation.mode"]: "atwill",
     };
 
@@ -335,14 +347,14 @@ export class MagicItem {
     }
 
     // this exists if the 'child' spell has been created on an actor
-    if (original.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.parentItem) === this.item.uuid) {
+    if (original.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem) === this.item.uuid) {
       return original;
     }
 
     // these changes are always applied
     const fixedChanges = {
       ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
-      [`flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
+      [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
       ["system.preparation.mode"]: "atwill",
     };
 
@@ -502,7 +514,7 @@ export class MagicItem {
 
       const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
         ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
-        [`flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
+        [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
         ["system.preparation.mode"]: "atwill",
       });
 
@@ -515,7 +527,7 @@ export class MagicItem {
     const itemSpells = [...this.itemSpellList, { uuid }];
 
     // this update should not re-render the item sheet because we need to wait until we refresh to do so
-    const property = `flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.itemSpells}`;
+    const property = `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemSpells}`;
     await this.item.update({ [property]: itemSpells }, { render: false });
 
     await this.refresh();
@@ -548,7 +560,7 @@ export class MagicItem {
 
       const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
         ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
-        [`flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
+        [`flags.${CONSTANTS.FLAGS.NAMESPACE}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
         ["system.preparation.mode"]: "atwill",
       });
 
@@ -561,7 +573,7 @@ export class MagicItem {
     const itemFeats = [...this.itemFeatList, { uuid }];
 
     // this update should not re-render the item sheet because we need to wait until we refresh to do so
-    const property = `flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.itemFeats}`;
+    const property = `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemFeats}`;
     await this.item.update({ [property]: itemFeats }, { render: false });
 
     await this.refresh();
@@ -594,7 +606,7 @@ export class MagicItem {
 
       const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
         ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
-        [`flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
+        [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
         ["system.preparation.mode"]: "atwill",
       });
 
@@ -607,7 +619,7 @@ export class MagicItem {
     const itemTables = [...this.itemTableList, { uuid }];
 
     // this update should not re-render the item sheet because we need to wait until we refresh to do so
-    const property = `flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.itemTables}`;
+    const property = `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemTables}`;
     await this.item.update({ [property]: itemTables }, { render: false });
 
     await this.refresh();
@@ -635,7 +647,7 @@ export class MagicItem {
     this._itemSpellItems?.delete(itemId);
     this._itemSpellFlagMap?.delete(itemId);
 
-    await this.item.setFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemSpells, newItemSpells);
+    await this.item.setFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells, newItemSpells);
 
     // Nothing more to do for unowned items.
     if (!this.item.isOwned) return;
@@ -654,7 +666,7 @@ export class MagicItem {
       }));
 
     if (shouldDeleteSpell) return spellItem.delete();
-    else return spellItem.unsetFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.parentItem);
+    else return spellItem.unsetFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem);
   }
 
   /**
@@ -675,7 +687,7 @@ export class MagicItem {
     this._itemFeatItems?.delete(itemId);
     this._itemFeatFlagMap?.delete(itemId);
 
-    await this.item.setFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemFeats, newItemFeats);
+    await this.item.setFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemFeats, newItemFeats);
 
     // Nothing more to do for unowned items.
     if (!this.item.isOwned) return;
@@ -694,7 +706,7 @@ export class MagicItem {
       }));
 
     if (shouldDeleteFeat) return spellItem.delete();
-    else return spellItem.unsetFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.parentItem);
+    else return spellItem.unsetFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem);
   }
 
   /**
@@ -715,7 +727,7 @@ export class MagicItem {
     this._itemTableItems?.delete(itemId);
     this._itemTableFlagMap?.delete(itemId);
 
-    await this.item.setFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemTables, newItemTables);
+    await this.item.setFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemTables, newItemTables);
 
     // Nothing more to do for unowned items.
     if (!this.item.isOwned) return;
@@ -734,7 +746,7 @@ export class MagicItem {
       }));
 
     if (shouldDeleteTable) return spellItem.delete();
-    else return spellItem.unsetFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.parentItem);
+    else return spellItem.unsetFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem);
   }
 
   /**
@@ -755,7 +767,7 @@ export class MagicItem {
     await this.item.update(
       {
         flags: {
-          [CONSTANTS.MODULE_ID]: {
+          [CONSTANTS.MODULE_FLAG]: {
             [CONSTANTS.FLAGS.itemSpells]: newItemSpellsFlagValue,
           },
         },
@@ -794,7 +806,7 @@ export class MagicItem {
     await this.item.update(
       {
         flags: {
-          [CONSTANTS.MODULE_ID]: {
+          [CONSTANTS.MODULE_FLAG]: {
             [CONSTANTS.FLAGS.itemFeats]: newItemFeatsFlagValue,
           },
         },
@@ -833,7 +845,7 @@ export class MagicItem {
     await this.item.update(
       {
         flags: {
-          [CONSTANTS.MODULE_ID]: {
+          [CONSTANTS.MODULE_FLAG]: {
             [CONSTANTS.FLAGS.itemTables]: newItemTablesFlagValue,
           },
         },
@@ -873,27 +885,27 @@ export class MagicItem {
   sort() {
     if (this.sorting === "a") {
       // this.spells = this.spells.sort(MagicItem.sortByName);
-      this.itemSpellFlagMap = new Map(
-        [...this.itemSpellFlagMap].sort(([k, v], [k2, v2]) => {
-          return MagicItem.sortByName(v, v2);
+      this._itemSpellFlagMap = new Map(
+        [...this._itemSpellFlagMap.entries()].sort((a, b) => {
+          return MagicItem.sortByName(a, b);
         })
       );
-      this.itemSpellItemMap = new Map(
-        [...this.itemSpellItemMap].sort(([k, v], [k2, v2]) => {
-          return MagicItem.sortByName(v, v2);
+      this._itemSpellItems = new Map(
+        [...this._itemSpellItems.entries()].sort((a, b) => {
+          return MagicItem.sortByName(a, b);
         })
       );
     }
     if (this.sorting === "l") {
       // this.spells = this.spells.sort(MagicItem.sortByLevel);
-      this.itemSpellFlagMap = new Map(
-        [...this.itemSpellFlagMap].sort(([k, v], [k2, v2]) => {
-          return MagicItem.sortByLevel(v, v2);
+      this._itemSpellFlagMap = new Map(
+        [...this._itemSpellFlagMap.entries()].sort((a, b) => {
+          return MagicItem.sortByLevel(a, b);
         })
       );
-      this.itemSpellItemMap = new Map(
-        [...this.itemSpellItemMap].sort(([k, v], [k2, v2]) => {
-          return MagicItem.sortByLevel(v, v2);
+      this._itemSpellItems = new Map(
+        [...this._itemSpellItems.entries()].sort((a, b) => {
+          return MagicItem.sortByLevel(a, b);
         })
       );
     }
@@ -1073,7 +1085,7 @@ export class MagicItem {
 
   hasSpell(spellId) {
     // return this.spells.filter((spell) => spell.id === spellId).length === 1;
-    return !!this._itemFeatItems[spell];
+    return !!this._itemFeatItems[spellId];
   }
 
   addFeat(data) {
@@ -1123,11 +1135,13 @@ export class MagicItem {
   }
 
   hasTable(tableId) {
-    return this.tables.filter((table) => table.id === tableId).length === 1;
+    // return this.tables.filter((table) => table.id === tableId).length === 1;
+    return !!this._itemTableItems[tableId];
   }
 
   tablesByUsage(usage) {
-    return this.tables.filter((table) => table.usage === usage);
+    // return this.tables.filter((table) => table.usage === usage);
+    return this._itemTableItems.values().filter((table) => table.usage === usage);
   }
 
   get tableAsSpells() {
@@ -1154,6 +1168,7 @@ export class MagicItem {
     if (entity.type === "spell") {
       this.addSpell({
         id: entity.id,
+        uuid: entity.uuid,
         name: name,
         img: entity.img,
         pack: pack,
@@ -1168,6 +1183,7 @@ export class MagicItem {
     if (entity.type === "feat") {
       this.addFeat({
         id: entity.id,
+        uuid: entity.uuid,
         name: name,
         img: entity.img,
         pack: pack,
@@ -1179,6 +1195,7 @@ export class MagicItem {
     if (entity.documentName === "RollTable") {
       this.addTable({
         id: entity.id,
+        uuid: entity.uuid,
         name: name,
         img: entity.img,
         pack: pack,

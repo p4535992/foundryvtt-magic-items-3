@@ -29,7 +29,7 @@ export class ItemsWithSpells5eActorSheet {
     const nonItemSpells = spells.filter((spell) => {
       const parentItemUuid = foundry.utils.getProperty(
         spell,
-        `flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`
+        `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`
       );
 
       if (!parentItemUuid) {
@@ -60,15 +60,26 @@ export class ItemsWithSpells5eActorSheet {
     });
 
     const spellItems = spells.filter((spell) =>
-      foundry.utils.getProperty(spell, `flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`)
+      foundry.utils.getProperty(spell, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`)
     );
 
     const itemsWithSpells = this.actor.items.filter((item) => {
-      const fl = item.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemSpells)?.length;
-      let include = false;
+      let fl = null;
       try {
-        include = !!game.settings.get(CONSTANTS.MODULE_ID, `includeItemType${item.type.titleCase()}`);
-      } catch {}
+        fl = item.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells)?.length;
+      } catch (e) {
+        fl = getProperty(item, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemSpells}`)?.length;
+      }
+      // const fl = item.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells)?.length;
+      let include = false;
+      // TODO
+      // try {
+      //   include = !!game.settings.get(CONSTANTS.MODULE_ID, `includeItemType${item.type.titleCase()}`);
+      // } catch {}
+      let acceptedTypes = ["weapon", "equipment", "consumable", "tool", "backpack", "feat"];
+      if (acceptedTypes.includes(item.type)) {
+        include = true;
+      }
       return fl && include;
     });
 
@@ -89,7 +100,7 @@ export class ItemsWithSpells5eActorSheet {
 
         const parentItem = foundry.utils.getProperty(
           spell,
-          `flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`
+          `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`
         );
 
         return parentItem === itemWithSpells.uuid;

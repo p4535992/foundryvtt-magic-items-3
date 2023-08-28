@@ -31,7 +31,13 @@ export class ItemsWithSpells5eActor {
     }
 
     const actorSpellsFromItem = itemDeleted.actor.items.filter((item) => {
-      const parentItemUuid = item.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.parentItem);
+      let parentItemUuid = null;
+      try {
+        parentItemUuid = item.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem);
+      } catch (e) {
+        parentItemUuid = getProperty(item, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`);
+      }
+      // const parentItemUuid = item.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem);
       if (!parentItemUuid) return false;
 
       return parentItemUuid === itemDeleted.uuid;
@@ -63,9 +69,18 @@ export class ItemsWithSpells5eActor {
     // do nothing if the item was deleted off a vehicle or group type actor
     if (["group", "vehicle"].includes(itemDeleted.parent?.type)) return;
 
-    if (!itemDeleted.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemSpells)?.length) {
+    let itemSpellsTmp = null;
+    try {
+      itemSpellsTmp = itemDeleted.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells);
+    } catch (e) {
+      itemSpellsTmp = getProperty(itemDeleted, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemSpells}`);
+    }
+    if (!itemSpells?.length) {
       return;
     }
+    // if (!itemDeleted.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells)?.length) {
+    //   return;
+    // }
 
     log("handleDeleteItem", itemDeleted, options);
 
@@ -134,20 +149,43 @@ export class ItemsWithSpells5eActor {
 
     // bail out from creating the spells if the parent item is not valid.
     let include = false;
-    try {
-      include = !!game.settings.get(CONSTANTS.MODULE_ID, `includeItemType${itemCreated.type.titleCase()}`);
-    } catch {}
+    // TODO
+    // try {
+    //   include = !!game.settings.get(CONSTANTS.MODULE_ID, `includeItemType${itemCreated.type.titleCase()}`);
+    // } catch {}
+    let acceptedTypes = ["weapon", "equipment", "consumable", "tool", "backpack", "feat"];
+    if (acceptedTypes.includes(item.type)) {
+      include = true;
+    }
     if (!include) return;
 
     log("handleCreateItem" + itemCreated);
 
-    if (!itemCreated.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemSpells)?.length) {
+    let itemSpellsTmp = null;
+    try {
+      itemSpellsTmp = itemCreated.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells);
+    } catch (e) {
+      itemSpellsTmp = getProperty(itemCreated, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemSpells}`);
+    }
+    if (!itemSpellsTmp?.length) {
       return;
     }
 
+    // if (!itemCreated.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells)?.length) {
+    //   return;
+    // }
+
     const createdDocuments = await this.addChildSpellsToActor(itemCreated);
 
-    const newFlagDataArray = itemCreated.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemSpells)?.map((flagData) => {
+    let itemSpellsTmp2 = null;
+    try {
+      itemSpellsTmp2 = itemCreated.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells);
+    } catch (e) {
+      itemSpellsTmp2 = getProperty(itemCreated, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemSpells}`);
+    }
+
+    const newFlagDataArray = itemSpellsTmp2?.map((flagData) => {
+      // const newFlagDataArray = itemCreated.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells)?.map((flagData) => {
       const relevantCreatedDocument = createdDocuments.find(
         (item) => item.getFlag("core", "sourceId") === flagData.uuid
       );
@@ -158,6 +196,6 @@ export class ItemsWithSpells5eActor {
       };
     });
 
-    itemCreated.setFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemSpells, newFlagDataArray);
+    itemCreated.setFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells, newFlagDataArray);
   };
 }

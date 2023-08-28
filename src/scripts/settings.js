@@ -1,6 +1,9 @@
 import CONSTANTS from "./constants/constants.js";
 import { dialogWarning, i18n, warn } from "./lib/lib.js";
 
+// the item types that can NEVER have spells in them.
+export const EXCLUDED_TYPES = ["class", "subclass", "background", "race", "spell", "loot"];
+
 export const registerSettings = function () {
   //   game.settings.registerMenu(CONSTANTS.MODULE_NAME, "resetAllSettings", {
   //     name: `${CONSTANTS.MODULE_NAME}.setting.reset.name`,
@@ -11,6 +14,18 @@ export const registerSettings = function () {
   //   });
 
   // =====================================================================
+
+  const TYPES = Item.TYPES.filter((t) => !EXCLUDED_TYPES.includes(t));
+
+  for (const type of TYPES) {
+    game.settings.register(CONSTANTS.MODULE_ID, `includeItemType${type.titleCase()}`, {
+      scope: "world",
+      config: false,
+      type: Boolean,
+      default: true,
+      requiresReload: true,
+    });
+  }
 
   game.settings.register(CONSTANTS.MODULE_ID, "identifiedOnly", {
     name: "MAGICITEMS.SettingIdentifiedOnly",
