@@ -54,10 +54,10 @@ export class MagicItemSheet {
    */
   async render() {
     if (this.actor.hasItemsFeats()) {
-      await this.renderTemplate("magic-item-feat-sheet", "magic-items-3-feats-content", "features");
+      await this.renderTemplate("magic-item-feat-sheet", "magic-items-feats-content", "features");
     }
     if (this.actor.hasItemsSpells()) {
-      await this.renderTemplate("magic-item-spell-sheet", "magic-items-3-spells-content", "spellbook");
+      await this.renderTemplate("magic-item-spell-sheet", "magic-items-spells-content", "spellbook");
     }
 
     this.actor.items

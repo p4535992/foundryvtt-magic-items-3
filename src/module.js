@@ -1,3 +1,4 @@
+import CONSTANTS from "./scripts/constants/constants.js";
 import { MagicItemActor } from "./scripts/magicitemactor.js";
 import { MagicItemSheet } from "./scripts/magicitemsheet.js";
 import { MagicItemTab } from "./scripts/magicItemtab.js";
@@ -9,7 +10,7 @@ Handlebars.registerHelper("enabled", function (value, options) {
 });
 
 Hooks.once("init", () => {
-  game.settings.register("magic-items-3", "identifiedOnly", {
+  game.settings.register(CONSTANTS.MODULE_ID, "identifiedOnly", {
     name: "MAGICITEMS.SettingIdentifiedOnly",
     hint: "MAGICITEMS.SettingIdentifiedOnlyHint",
     scope: "world",
@@ -18,7 +19,7 @@ Hooks.once("init", () => {
     config: true,
   });
 
-  game.settings.register("magic-items-3", "hideFromPlayers", {
+  game.settings.register(CONSTANTS.MODULE_ID, "hideFromPlayers", {
     name: "MAGICITEMS.SettingHideFromPlayers",
     hint: "MAGICITEMS.SettingHideFromPlayersHint",
     scope: "world",
@@ -29,7 +30,7 @@ Hooks.once("init", () => {
 
   if (typeof Babele !== "undefined") {
     Babele.get().register({
-      module: "magic-items-3",
+      module: "magic-items",
       lang: "it",
       dir: "lang/packs/it",
     });
@@ -50,12 +51,12 @@ Hooks.once("createActor", (actor) => {
   }
 });
 
-Hooks.on(`renderItemSheet5e`, (app, html, data) => {
-  if (!game.user.isGM && game.settings.get("magic-items-3", "hideFromPlayers")) {
-    return;
-  }
-  MagicItemTab.bind(app, html, data);
-});
+// Hooks.on(`renderItemSheet5e`, (app, html, data) => {
+//   if (!game.user.isGM && game.settings.get(CONSTANTS.MODULE_ID, "hideFromPlayers")) {
+//     return;
+//   }
+//   MagicItemTab.bind(app, html, data);
+// });
 
 Hooks.on(`renderActorSheet5eCharacter`, (app, html, data) => {
   MagicItemSheet.bind(app, html, data);

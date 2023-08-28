@@ -580,7 +580,7 @@ export class OwnedMagicItem extends MagicItem {
    * Tests if the owned magic items can visualize his powers.
    */
   get visible() {
-    let identifiedOnly = game.settings.get("magic-items-3", "identifiedOnly");
+    let identifiedOnly = game.settings.get(CONSTANTS.MODULE_ID, "identifiedOnly");
     return !identifiedOnly || this.item.system.identified;
   }
 

@@ -1,0 +1,105 @@
+<form autocomplete="off">
+  <h2>{{localize "MAGICITEMS.ConfigureOverrides"}}</h2>
+
+  <ol class="warnings">
+    {{#if parentItem.isOwned}}
+    <li class="notification warning">{{localize "MAGICITEMS.WARN_OWNED"}}</li>
+    {{/if}}
+  </ol>
+
+  <div class="details">
+
+    <h3 class="form-header">{{localize "DND5E.SpellDetails"}}</h3>
+
+    {{!-- Spell Level --}}
+    <div class="form-group">
+      <label>{{localize "DND5E.SpellLevel"}}</label>
+      <select name="overrides.system.level" data-dtype="Number">
+        {{#select spellLevelToDisplay}}
+        {{#each config.spellLevels as |name lvl|}}
+        <option value="{{lvl}}">{{name}}</option>
+        {{/each}}
+        {{/select}}
+      </select>
+    </div>
+
+    <p class="notes">{{localize "MAGICITEMS.SPELL_LEVEL_HINT"}}</p>
+
+    <hr>
+
+
+    {{!-- Limited Uses --}}
+    <h3 class="form-header">{{localize "DND5E.ConsumeTitle"}}</h3>
+    <div class="form-group uses-per">
+      <label>{{localize "DND5E.LimitedUses"}}</label>
+      <div class="form-fields">
+        <input type="text" name="overrides.system.uses.value" value="{{overrides.system.uses.max}}" disabled data-dtype="Number">
+        <span class="sep">{{localize "DND5E.of"}}</span>
+        <input type="text" name="overrides.system.uses.max" value="{{overrides.system.uses.max}}">
+        <span class="sep">{{localize "DND5E.per"}}</span>
+        <select name="overrides.system.uses.per">
+          {{#select overrides.system.uses.per}}
+          <option value=""></option>
+          {{#each config.limitedUsePeriods as |name key|}}
+          <option value="{{key}}">{{name}}</option>
+          {{/each}}
+          {{/select}}
+        </select>
+      </div>
+    </div>
+    <p class="notes">{{localize "MAGICITEMS.LIMITED_HINT"}}</p>
+
+    <hr>
+
+    {{!-- Consumption --}}
+    <div class="form-group uses-per">
+      <label>{{localize "DND5E.Charges"}}</label>
+      <div class="form-fields">
+        <select name="overrides.system.consume.type" disabled>
+          <option value="charges" selected>{{localize "DND5E.ConsumeCharges"}}</option>
+        </select>
+        <select name="overrides.system.consume.target" disabled>
+          <option value="{{parentItem.id}}" selected>{{parentItem.name}}</option>
+        </select>
+        <input type="text" name="overrides.system.consume.amount" value="{{overrides.system.consume.amount}}" data-dtype="Number">
+      </div>
+    </div>
+    <p class="notes">{{localize "MAGICITEMS.CHARGES_HINT"}}</p>
+
+    <h3 class="form-header">{{localize "DND5E.ActionSave"}}</h3>
+    {{!-- Saving Throw --}}
+    <div class="form-group input-select">
+      <label>{{localize "DND5E.ActionSave"}}</label>
+      <div class="form-fields">
+        <select name="save.ability" disabled>
+          {{#select save.ability}}
+          <option value=""></option>
+          {{#each config.abilities as |ability a|}}
+          <option value="{{a}}">{{ability.label}}</option>
+          {{/each}}
+          {{/select}}
+        </select>
+        <span>{{localize "DND5E.VsDC"}}</span>
+
+        <input type="text" name="overrides.system.save.dc"
+          value="{{#if overrides.system.save.dc}}{{overrides.system.save.dc}}{{/if}}" data-dtype="Number"
+          placeholder="{{localize 'DND5E.AbbreviationDC'}}" {{#unless isFlatDC}}disabled{{/unless}}>
+
+        <select name="overrides.system.save.scaling">
+          {{#select overrides.system.save.scaling}}
+          <option value="spell">{{localize "DND5E.Spellcasting"}}</option>
+          {{#each config.abilities as |ability a|}}
+          <option value="{{a}}">{{ability.label}}</option>
+          {{/each}}
+          <option value="flat">{{localize "DND5E.Flat"}}</option>
+          {{/select}}
+        </select>
+      </div>
+    </div>
+    <p class="notes">{{localize "MAGICITEMS.SAVE_HINT"}}</p>
+  </div>
+
+  <button type="submit" name="submit">
+    <i class="far fa-save"></i> {{localize "Save"}}
+  </button>
+</form>

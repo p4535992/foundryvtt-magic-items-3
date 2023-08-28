@@ -5,9 +5,9 @@
   "version": "1.2.2",
   "authors": [
     {
-      "name": "PwQt",
-      "url": "https://github.com/PwQt/magic-items-3",
-      "discord": "PwQt#7620"
+      "name": "p4535992",
+      "url": "https://github.com/p4535992/magic-items-3",
+      "discord": "p4535992#7620"
     },
     {
       "name": "p4535992",
@@ -119,12 +119,12 @@
     "maximum": 11
   },
   "manifestPlusVersion": "1.2.1",
-  "url": "https://github.com/PwQt/magic-items-3",
-  "manifest": "https://github.com/PwQt/magic-items-3/releases/download/1.2.2/module.json",
-  "download": "https://github.com/PwQt/magic-items-3/releases/download/1.2.2/module.zip",
-  "readme": "https://github.com/PwQt/magic-items-3/blob/master/README.md",
-  "changelog": "https://github.com/PwQt/magic-items-3/blob/master/CHANGELOG.md",
-  "bugs": "https://github.com/PwQt/magic-items-3/issues",
+  "url": "https://github.com/p4535992/magic-items-3",
+  "manifest": "https://github.com/p4535992/magic-items-3/releases/download/1.2.2/module.json",
+  "download": "https://github.com/p4535992/magic-items-3/releases/download/1.2.2/module.zip",
+  "readme": "https://github.com/p4535992/magic-items-3/blob/master/README.md",
+  "changelog": "https://github.com/p4535992/magic-items-3/blob/master/CHANGELOG.md",
+  "bugs": "https://github.com/p4535992/magic-items-3/issues",
   "allowBugReporter": true,
   "relationships": {
     "systems": [
@@ -133,7 +133,7 @@
         "type": "system",
         "manifest": "https://raw.githubusercontent.com/foundryvtt/dnd5e/master/system.json",
         "compatibility": {
-          "verified": "2.2"
+          "verified": "2.2.2"
         }
       }
     ],
