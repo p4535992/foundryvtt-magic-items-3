@@ -1,8 +1,7 @@
 import { MAGICITEMS } from "./config.js";
 import { log } from "./lib/lib.js";
-import { MagicItem } from "./magicitem.js";
-import { ItemsWithSpells5eItemSpellOverrides } from "./override/item-form-spell-overrides.js";
-import { ItemsWithSpells5eItem } from "./override/magic-item-override.js";
+import { MagicItemSpellOverrides } from "./override/item/item-form-spell-overrides.js";
+import { MagicItem } from "./override/item/magic-item.js";
 
 const magicItemTabs = [];
 
@@ -31,7 +30,7 @@ export class MagicItemTab {
     this.activate = false;
     this.html = html;
 
-    this.itemWithSpellsItem = new ItemsWithSpells5eItem(this.item);
+    this.itemWithSpellsItem = new MagicItem(this.item);
   }
 
   /** MUTATED: All open ItemSheet have a cached instance of this class */
@@ -61,12 +60,6 @@ export class MagicItemTab {
 
       if (!include) {
         return;
-      }
-
-      let tab = magicItemTabs[app.id];
-      if (!tab) {
-        tab = new MagicItemTab(app);
-        magicItemTabs[app.id] = tab;
       }
 
       log(false, {
@@ -581,7 +574,7 @@ export class MagicItemTab {
     }
 
     // pop up a formapp to configure this item's overrides
-    return new ItemsWithSpells5eItemSpellOverrides(this.itemWithSpellsItem, itemId).render(true);
+    return new MagicItemSpellOverrides(this.itemWithSpellsItem, itemId).render(true);
   }
 
   /**

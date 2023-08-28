@@ -1,5 +1,5 @@
 import CONSTANTS from "../../constants/constants.js";
-import { ItemsWithSpells5eItem } from "../magic-item-override.js";
+import { MagicItem } from "../item/magic-item.js";
 
 /**
  * A class made to make managing the operations for an Actor.
@@ -23,7 +23,7 @@ export class ItemsWithSpells5eActor {
       return;
     }
 
-    const itemWithSpellsItem = new ItemsWithSpells5eItem(itemDeleted);
+    const itemWithSpellsItem = new MagicItem(itemDeleted);
 
     // do nothing if there are no item spells
     if (!itemWithSpellsItem.itemSpellList.length) {
@@ -89,7 +89,7 @@ export class ItemsWithSpells5eActor {
     // abort if no item provided or if not an owned item
     if (!itemCreated || !itemCreated.isOwned) return;
 
-    const itemWithSpellsItem = new ItemsWithSpells5eItem(itemCreated);
+    const itemWithSpellsItem = new MagicItem(itemCreated);
 
     // do nothing if there are no item spells
     if (!itemWithSpellsItem.itemSpellList.length) return;

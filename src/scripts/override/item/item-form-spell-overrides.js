@@ -1,10 +1,10 @@
-import CONSTANTS from "../constants/constants.js";
-import { ItemsWithSpells5e } from "./magic-item-override.js";
+import CONSTANTS from "../../constants/constants.js";
+import { ItemsWithSpells5e } from "./magic-item.js";
 
 /**
  * The form to control Item Spell overrides (e.g. for consumption logic)
  */
-export class ItemsWithSpells5eItemSpellOverrides extends FormApplication {
+export class MagicItemSpellOverrides extends FormApplication {
   constructor(itemWithSpellsItem, itemSpellId) {
     const itemSpellFlagData = itemWithSpellsItem.itemSpellFlagMap.get(itemSpellId);
     log({ itemSpellFlagData });
@@ -14,7 +14,7 @@ export class ItemsWithSpells5eItemSpellOverrides extends FormApplication {
     // the spell we are editing
     this.itemSpellId = itemSpellId;
 
-    // the ItemsWithSpells5eItem instance to use
+    // the MagicItem instance to use
     this.itemWithSpellsItem = itemWithSpellsItem;
 
     // the parent item

@@ -3,6 +3,8 @@ const CONSTANTS = {
   PATH: `modules/magic-items/`,
   FLAGS: {
     itemSpells: "item-spells",
+    itemFeats: "item-feats",
+    itemTables: "item-tables",
     parentItem: "parent-item",
   },
   MAGICITEMS: {
