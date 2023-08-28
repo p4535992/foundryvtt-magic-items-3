@@ -1,121 +1,109 @@
-import CONSTANTS from "./scripts/constants/constants.js";
-import { MagicItemActor } from "./scripts/magicitemactor.js";
-import { MagicItemSheet } from "./scripts/magicitemsheet.js";
-import { MagicItemTab } from "./scripts/magicItemtab.js";
+/**
+ * This is your TypeScript entry file for Foundry VTT.
+ * Register custom settings, sheets, and constants using the Foundry API.
+ * Change this heading to be more descriptive to your module, or remove it.
+ * Author: [your name]
+ * Content License: [copyright and-or license] If using an existing system
+ * 					you may want to put a (link to a) license or copyright
+ * 					notice here (e.g. the OGL).
+ * Software License: [your license] Put your desired license here, which
+ * 					 determines how others may use and modify your module
+ */
+// Import JavaScript modules
 
-//CONFIG.debug.hooks = true;
+// Import TypeScript modules
+import { registerSettings } from "./scripts/settings.js";
+import { initHooks, readyHooks, setupHooks } from "./scripts/main.js";
+import { error, i18n, warn } from "./scripts/lib/lib.js";
+import CONSTANTS from "./scripts/constants/constants.js";
+import API from "./scripts/API/api.js";
+
+/* ------------------------------------ */
+/* Initialize module					*/
+/* ------------------------------------ */
+Hooks.once("init", async () => {
+  // log(`${CONSTANTS.MODULE_NAME} | Initializing ${CONSTANTS.MODULE_NAME}`);
+
+  // Register custom module settings
+  registerSettings();
+  initHooks();
+
+  // Preload Handlebars templates
+  //await preloadTemplates();
+});
+
+/* ------------------------------------ */
+/* Setup module							*/
+/* ------------------------------------ */
+Hooks.once("setup", function () {
+  // Do anything after initialization but before ready
+  setupHooks();
+});
+
+/* ------------------------------------ */
+/* When ready							*/
+/* ------------------------------------ */
+Hooks.once("ready", async () => {
+  // Do anything once the module is ready
+  // if (!game.modules.get('lib-wrapper')?.active && game.user?.isGM) {
+  //   let word = 'install and activate';
+  //   if (game.modules.get('lib-wrapper')) word = 'activate';
+  //   throw error(`Requires the 'libWrapper' module. Please ${word} it.`);
+  // }
+  // if (!game.modules.get('socketLib')?.active && game.user?.isGM) {
+  //   let word = 'install and activate';
+  //   if (game.modules.get('socketLib')) word = 'activate';
+  //   throw error(`Requires the 'socketLib' module. Please ${word} it.`);
+  // }
+  readyHooks();
+});
+
+/* ------------------------------------ */
+/* Other Hooks							*/
+/* ------------------------------------ */
+
+Hooks.once("devModeReady", ({ registerPackageDebugFlag }) => {
+  registerPackageDebugFlag(CONSTANTS.MODULE_NAME);
+});
+
+/**
+ * Initialization helper, to set API.
+ * @param api to set to game module.
+ */
+export function setApi(api) {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME);
+  data.api = api;
+}
+
+/**
+ * Returns the set API.
+ * @returns Api from games module.
+ */
+export function getApi() {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME);
+  return data.api;
+}
+
+/**
+ * Initialization helper, to set Socket.
+ * @param socket to set to game module.
+ */
+export function setSocket(socket) {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME);
+  data.socket = socket;
+}
+
+/*
+ * Returns the set socket.
+ * @returns Socket from games module.
+ */
+export function getSocket() {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME);
+  return data.socket;
+}
 
 Handlebars.registerHelper("enabled", function (value, options) {
   return Boolean(value) ? "" : "disabled";
-});
-
-Hooks.once("init", () => {
-  game.settings.register(CONSTANTS.MODULE_ID, "identifiedOnly", {
-    name: "MAGICITEMS.SettingIdentifiedOnly",
-    hint: "MAGICITEMS.SettingIdentifiedOnlyHint",
-    scope: "world",
-    type: Boolean,
-    default: true,
-    config: true,
-  });
-
-  game.settings.register(CONSTANTS.MODULE_ID, "hideFromPlayers", {
-    name: "MAGICITEMS.SettingHideFromPlayers",
-    hint: "MAGICITEMS.SettingHideFromPlayersHint",
-    scope: "world",
-    type: Boolean,
-    default: false,
-    config: true,
-  });
-
-  if (typeof Babele !== "undefined") {
-    Babele.get().register({
-      module: "magic-items",
-      lang: "it",
-      dir: "lang/packs/it",
-    });
-  }
-});
-
-Hooks.once("ready", () => {
-  Array.from(game.actors)
-    .filter((actor) => actor.permission >= 1)
-    .forEach((actor) => {
-      MagicItemActor.bind(actor);
-    });
-});
-
-Hooks.once("createActor", (actor) => {
-  if (actor.permission >= 2) {
-    MagicItemActor.bind(actor);
-  }
-});
-
-// Hooks.on(`renderItemSheet5e`, (app, html, data) => {
-//   if (!game.user.isGM && game.settings.get(CONSTANTS.MODULE_ID, "hideFromPlayers")) {
-//     return;
-//   }
-//   MagicItemTab.bind(app, html, data);
-// });
-
-Hooks.on(`renderActorSheet5eCharacter`, (app, html, data) => {
-  MagicItemSheet.bind(app, html, data);
-});
-
-Hooks.on(`renderActorSheet5eNPC`, (app, html, data) => {
-  MagicItemSheet.bind(app, html, data);
-});
-
-Hooks.on("hotbarDrop", async (bar, data, slot) => {
-  if (data.type !== "MagicItem") return;
-
-  const command = `MagicItems.roll("${data.magicItemName}","${data.itemName}");`;
-  let macro = game.macros.find((m) => m.name === data.name && m.command === command);
-  if (!macro) {
-    macro = await Macro.create(
-      {
-        name: data.name,
-        type: "script",
-        img: data.img,
-        command: command,
-        flags: { "dnd5e.itemMacro": true },
-      },
-      { displaySheet: false }
-    );
-  }
-  game.user.assignHotbarMacro(macro, slot);
-
-  return false;
-});
-
-Hooks.on(`createItem`, (item) => {
-  if (item.actor) {
-    const actor = item.actor;
-    const miActor = MagicItemActor.get(actor.id);
-    if (miActor && miActor.listening && miActor.actor.id === actor.id) {
-      miActor.buildItems();
-    }
-  }
-});
-
-Hooks.on(`updateItem`, (item) => {
-  if (item.actor) {
-    const actor = item.actor;
-    const miActor = MagicItemActor.get(actor.id);
-    if (miActor && miActor.listening && miActor.actor.id === actor.id) {
-      setTimeout(miActor.buildItems.bind(miActor), 500);
-    }
-  }
-});
-
-Hooks.on(`deleteItem`, (item) => {
-  if (item.actor) {
-    const actor = item.actor;
-    const miActor = MagicItemActor.get(actor.id);
-    if (miActor && miActor.listening && miActor.actor.id === actor.id) {
-      miActor.buildItems();
-    }
-  }
 });
 
 window.MagicItems = {

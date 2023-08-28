@@ -1,5 +1,4 @@
 import CONSTANTS from "../constants/constants.js";
-import SETTINGS from "../constants/settings.js";
 
 // =================================
 // Logger Utility
@@ -8,44 +7,59 @@ import SETTINGS from "../constants/settings.js";
 // export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3
 
-export function debug(msg, args = "") {
-  if (game.settings.get(CONSTANTS.MODULE_ID, SETTINGS.debug)) {
-    console.log(`DEBUG | ${CONSTANTS.MODULE_ID} | ${msg}`, args);
+// /**
+//  * A console.log wrapper which checks if we are debugging before logging
+//  */
+// export function log(...args) {
+//   try {
+//     const shouldLog = game.modules.get('_dev-mode')?.api?.getPackageDebugValue(CONSTANTS.MODULE_ID, 'boolean');
+
+//     if (shouldLog) {
+//       console.log(CONSTANTS.MODULE_ID, '|', ...args);
+//     }
+//   } catch (e) {
+//     console.error(e.message);
+//   }
+// }
+
+export function debug(msg, ...args) {
+  if (game.settings.get(CONSTANTS.MODULE_ID, "debug")) {
+    console.log(`DEBUG | ${CONSTANTS.MODULE_ID} | ${msg}`, ...args);
   }
   return msg;
 }
 
-export function log(message) {
+export function log(message, ...args) {
   message = `${CONSTANTS.MODULE_ID} | ${message}`;
-  console.log(message.replace("<br>", "\n"));
+  console.log(message.replace("<br>", "\n"), ...args, ...args);
   return message;
 }
 
-export function notify(message) {
+export function notify(message, ...args) {
   message = `${CONSTANTS.MODULE_ID} | ${message}`;
   ui.notifications?.notify(message);
-  console.log(message.replace("<br>", "\n"));
+  console.log(message.replace("<br>", "\n"), ...args);
   return message;
 }
 
-export function info(info, notify = false) {
+export function info(info, notify = false, ...args) {
   info = `${CONSTANTS.MODULE_ID} | ${info}`;
   if (notify) ui.notifications?.info(info);
-  console.log(info.replace("<br>", "\n"));
+  console.log(info.replace("<br>", "\n"), ...args);
   return info;
 }
 
-export function warn(warning, notify = false) {
+export function warn(warning, notify = false, ...args) {
   warning = `${CONSTANTS.MODULE_ID} | ${warning}`;
   if (notify) ui.notifications?.warn(warning);
-  console.warn(warning.replace("<br>", "\n"));
+  console.warn(warning.replace("<br>", "\n"), ...args);
   return warning;
 }
 
-export function error(error, notify = true) {
+export function error(error, notify = true, ...args) {
   error = `${CONSTANTS.MODULE_ID} | ${error}`;
   if (notify) ui.notifications?.error(error);
-  return new Error(error.replace("<br>", "\n"));
+  return new Error(error.replace("<br>", "\n"), ...args);
 }
 
 export function timelog(message) {

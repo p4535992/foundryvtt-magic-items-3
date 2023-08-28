@@ -111,5 +111,30 @@
   "MAGICITEMS.WarnNoMagicItem": "Your controlled Actor does not have an item named ",
   "MAGICITEMS.WarnNoMagicItemSpell": "Your controlled Actor does not have a spell/feat named ",
 
-  "MAGICITEMS.TypeSpellPl": "Magic Item"
+  "MAGICITEMS.TypeSpellPl": "Magic Item",
+
+  "MAGICITEMS.CHARGES_HINT": "If this spell will be cast using charges from the parent item, configure the number of charges above.",
+  "MAGICITEMS.Configure": "Configure",
+  "MAGICITEMS.ConfigureOverrides": "Configure Overrides",
+  "MAGICITEMS.DeleteSpell": "Delete Spell",
+  "MAGICITEMS.LIMITED_HINT": "If this spell has a number of uses per rest or similar innate limitations, configure the number of charges above.",
+  "MAGICITEMS.MISSING_ITEM_DESCRIPTION": "This Spell's original item could not be found. Maybe it was deleted?",
+  "MAGICITEMS.MISSING_ITEM": "Missing Item",
+  "MAGICITEMS.MODULE_NAME": "Items with Spells",
+  "MAGICITEMS.QUERY_ALSO_DELETE": "Would you also like to delete the spells from that item?",
+  "MAGICITEMS.RemoveLink": "Remove Link",
+  "MAGICITEMS.SAVE_HINT": "If this spell has a flat DC or other specialized saving throw logic.",
+  "MAGICITEMS.SETTINGS.ITEM_EXCLUSION.HINT": "Select which item types can have spells attached.",
+  "MAGICITEMS.SETTINGS.ITEM_EXCLUSION.NAME": "Select Item Types",
+  "MAGICITEMS.SETTINGS.ITEM_EXCLUSION.TITLE": "Item Type Exclusion Menu",
+  "MAGICITEMS.SETTINGS.SORT_ORDER.HINT": "If checked, spellbook sections added by this module will be put at the bottom of the spellbook tab, rather than the top.",
+  "MAGICITEMS.SETTINGS.SORT_ORDER.NAME": "Spellbook Sort Order",
+  "MAGICITEMS.SPELL_LEVEL_HINT": "If this spell is to be cast at a specific level, configure the level above.",
+  "MAGICITEMS.WARN_ALSO_DELETE": "This will also delete the Spell from the Actor. Are you certain you want to delete the embedded spell?",
+  "MAGICITEMS.WARN_CANNOT_ADDREMOVE": "An Owned Item's spells cannot be added to or removed from. These spells have been added to the Actor's Spellbook Tab.",
+  "MAGICITEMS.WARN_OWNED": "You are editing an owned Item's spells, any changes made here will not be applied to the spells on the owning actor.",
+
+  "MAGICITEMS.setting.debug.name": "Enable debugging",
+  "MAGICITEMS.setting.debug.label": "Prints debug messages to the console",
+  "MAGICITEMS.setting.debug.hint": " "
 }

@@ -1,5 +1,5 @@
 import CONSTANTS from "../constants/constants.js";
-import { ItemsWithSpells5e } from "../items-with-spells-5e.js";
+import { ItemsWithSpells5e } from "./magic-item-override.js";
 
 /**
  * The form to control Item Spell overrides (e.g. for consumption logic)
@@ -7,7 +7,7 @@ import { ItemsWithSpells5e } from "../items-with-spells-5e.js";
 export class ItemsWithSpells5eItemSpellOverrides extends FormApplication {
   constructor(itemWithSpellsItem, itemSpellId) {
     const itemSpellFlagData = itemWithSpellsItem.itemSpellFlagMap.get(itemSpellId);
-    ItemsWithSpells5e.log(false, { itemSpellFlagData });
+    log({ itemSpellFlagData });
     // set the `object` of this FormApplication as the itemSpell data from the parent item's flags
     super(itemSpellFlagData?.changes ?? {});
 
@@ -61,13 +61,13 @@ export class ItemsWithSpells5eItemSpellOverrides extends FormApplication {
       },
     };
 
-    ItemsWithSpells5e.log(false, "getData", ret);
+    log("getData", ret);
 
     return ret;
   }
 
   async _updateObject(event, formData) {
-    ItemsWithSpells5e.log(false, "_updateObject", event, formData);
+    log("_updateObject", event, formData);
 
     const formDataExpanded = foundry.utils.expandObject(formData);
 

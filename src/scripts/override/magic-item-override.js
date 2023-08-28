@@ -1,5 +1,6 @@
-import { ItemsWithSpells5e } from "../items-with-spells-5e.js";
-import { ItemsWithSpells5eItemSheet } from "./item-sheet.js";
+import CONSTANTS from "../constants/constants.js";
+import { log } from "../lib/lib.js";
+import { MagicItemTab } from "../magicItemtab.js";
 
 /**
  * Creates a fake temporary item as filler for when a UUID is unable to resolve an item
@@ -9,12 +10,12 @@ import { ItemsWithSpells5eItemSheet } from "./item-sheet.js";
 const FakeEmptySpell = (uuid, parent) =>
   new Item.implementation(
     {
-      name: game.i18n.localize("IWS.MISSING_ITEM"),
+      name: game.i18n.localize("MAGICITEMS.MISSING_ITEM"),
       img: "icons/svg/hazard.svg",
       type: "spell",
       system: {
         description: {
-          value: game.i18n.localize("IWS.MISSING_ITEM_DESCRIPTION"),
+          value: game.i18n.localize("MAGICITEMS.MISSING_ITEM_DESCRIPTION"),
         },
       },
       _id: uuid.split(".").pop(),
@@ -49,7 +50,7 @@ export class ItemsWithSpells5eItem {
    * Raw flag data
    */
   get itemSpellList() {
-    return this.item.getFlag(ItemsWithSpells5e.MODULE_ID, ItemsWithSpells5e.FLAGS.itemSpells) ?? [];
+    return this.item.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemSpells) ?? [];
   }
 
   /**
@@ -67,10 +68,10 @@ export class ItemsWithSpells5eItem {
    * Update this class's understanding of the item spells
    */
   async refresh() {
-    ItemsWithSpells5e.log(false, "REFRESHING", this.itemSpellList);
+    log("REFRESHING" + this.itemSpellList);
     this._getItemSpellFlagMap();
     await this._getItemSpellItems();
-    ItemsWithSpells5e.log(false, "REFRESHed");
+    log("REFRESHed");
   }
 
   /**
@@ -82,7 +83,7 @@ export class ItemsWithSpells5eItem {
     // original could be in a compendium or on an actor
     let original = await fromUuid(uuid);
 
-    ItemsWithSpells5e.log(false, "original", original);
+    log("original", original);
 
     // return a fake 'empty' item if we could not create a childItem
     if (!original) {
@@ -90,14 +91,14 @@ export class ItemsWithSpells5eItem {
     }
 
     // this exists if the 'child' spell has been created on an actor
-    if (original.getFlag(ItemsWithSpells5e.MODULE_ID, ItemsWithSpells5e.FLAGS.parentItem) === this.item.uuid) {
+    if (original.getFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.parentItem) === this.item.uuid) {
       return original;
     }
 
     // these changes are always applied
     const fixedChanges = {
       ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
-      [`flags.${ItemsWithSpells5e.MODULE_ID}.${ItemsWithSpells5e.FLAGS.parentItem}`]: this.item.uuid,
+      [`flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
       ["system.preparation.mode"]: "atwill",
     };
 
@@ -118,7 +119,7 @@ export class ItemsWithSpells5eItem {
     });
     await childItem.updateSource(update);
 
-    ItemsWithSpells5e.log(false, "getChildItem", childItem);
+    log("getChildItem", childItem);
 
     return childItem;
   }
@@ -183,20 +184,20 @@ export class ItemsWithSpells5eItem {
 
       const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
         ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
-        [`flags.${ItemsWithSpells5e.MODULE_ID}.${ItemsWithSpells5e.FLAGS.parentItem}`]: this.item.uuid,
+        [`flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
         ["system.preparation.mode"]: "atwill",
       });
 
       const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
       uuid = newItem.uuid;
 
-      ItemsWithSpells5e.log(false, "new item created", newItem);
+      log("new item created", newItem);
     }
 
     const itemSpells = [...this.itemSpellList, { uuid }];
 
     // this update should not re-render the item sheet because we need to wait until we refresh to do so
-    const property = `flags.${ItemsWithSpells5e.MODULE_ID}.${ItemsWithSpells5e.FLAGS.itemSpells}`;
+    const property = `flags.${CONSTANTS.MODULE_ID}.${CONSTANTS.FLAGS.itemSpells}`;
     await this.item.update({ [property]: itemSpells }, { render: false });
 
     await this.refresh();
@@ -224,7 +225,7 @@ export class ItemsWithSpells5eItem {
     this._itemSpellItems?.delete(itemId);
     this._itemSpellFlagMap?.delete(itemId);
 
-    await this.item.setFlag(ItemsWithSpells5e.MODULE_ID, ItemsWithSpells5e.FLAGS.itemSpells, newItemSpells);
+    await this.item.setFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.itemSpells, newItemSpells);
 
     // Nothing more to do for unowned items.
     if (!this.item.isOwned) return;
@@ -238,12 +239,12 @@ export class ItemsWithSpells5eItem {
     const shouldDeleteSpell =
       alsoDeleteEmbeddedSpell &&
       (await Dialog.confirm({
-        title: game.i18n.localize("IWS.MODULE_NAME"),
-        content: game.i18n.localize("IWS.WARN_ALSO_DELETE"),
+        title: game.i18n.localize("MAGICITEMS.MODULE_NAME"),
+        content: game.i18n.localize("MAGICITEMS.WARN_ALSO_DELETE"),
       }));
 
     if (shouldDeleteSpell) return spellItem.delete();
-    else return spellItem.unsetFlag(ItemsWithSpells5e.MODULE_ID, ItemsWithSpells5e.FLAGS.parentItem);
+    else return spellItem.unsetFlag(CONSTANTS.MODULE_ID, CONSTANTS.FLAGS.parentItem);
   }
 
   /**
@@ -264,8 +265,8 @@ export class ItemsWithSpells5eItem {
     await this.item.update(
       {
         flags: {
-          [ItemsWithSpells5e.MODULE_ID]: {
-            [ItemsWithSpells5e.FLAGS.itemSpells]: newItemSpellsFlagValue,
+          [CONSTANTS.MODULE_ID]: {
+            [CONSTANTS.FLAGS.itemSpells]: newItemSpellsFlagValue,
           },
         },
       },
@@ -275,7 +276,7 @@ export class ItemsWithSpells5eItem {
     // update this data manager's understanding of the items it contains
     await this.refresh();
 
-    ItemsWithSpells5eItemSheet.instances.forEach((instance) => {
+    MagicItemTab.instances.forEach((instance) => {
       if (instance.itemWithSpellsItem === this) {
         instance._shouldOpenSpellsTab = true;
       }

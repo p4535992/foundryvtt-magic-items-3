@@ -26,12 +26,12 @@ export class MagicItemTab {
     this.app = app;
     this.item = app.item;
     this.sheetHtml = html;
-    this.itemWithSpellsItem = new ItemsWithSpells5eItem(this.item);
 
     // this.hack(this.app);
     this.activate = false;
-
     this.html = html;
+
+    this.itemWithSpellsItem = new ItemsWithSpells5eItem(this.item);
   }
 
   /** MUTATED: All open ItemSheet have a cached instance of this class */
@@ -45,6 +45,9 @@ export class MagicItemTab {
       if (!game.user.isGM && game.settings.get(CONSTANTS.MODULE_ID, "hideFromPlayers")) {
         return;
       }
+
+      const item = app.item;
+
       let include = false;
       // TODO
       //   try {
@@ -52,13 +55,20 @@ export class MagicItemTab {
       //   } catch {}
 
       let acceptedTypes = ["weapon", "equipment", "consumable", "tool", "backpack", "feat"];
-      if (acceptedTypes.includes(item.document.type)) {
+      if (acceptedTypes.includes(item.type)) {
         include = true;
       }
 
       if (!include) {
         return;
       }
+
+      let tab = magicItemTabs[app.id];
+      if (!tab) {
+        tab = new MagicItemTab(app);
+        magicItemTabs[app.id] = tab;
+      }
+
       log(false, {
         instances: this.instances,
       });
@@ -361,23 +371,41 @@ export class MagicItemTab {
   async _onDrop(evt) {
     evt.preventDefault();
 
-    let data;
-    try {
-      data = JSON.parse(evt.dataTransfer.getData("text/plain"));
-      if (!this.magicItem.support(data.type)) {
-        return;
-      }
-    } catch (err) {
-      return false;
-    }
+    // let data;
+    // try {
+    //   data = JSON.parse(evt.dataTransfer.getData("text/plain"));
+    //   if (!this.magicItem.support(data.type)) {
+    //     return;
+    //   }
+    // } catch (err) {
+    //   return false;
+    // }
+
+    if (!this.app.isEditable) return;
+    log("dragEnd", { event });
+
+    const data = TextEditor.getDragEventData(event);
+    log("dragEnd", { data });
+
+    if (data.type !== "Item") return;
+
+    const item = fromUuidSync(data.uuid);
+    log(false, "dragEnd", { item });
+
+    if (item.type !== "spell") return;
+
+    // set the flag to re-open this tab when the update completes
+    this._shouldOpenSpellsTab = true;
 
     const entity = await fromUuid(data.uuid);
     const pack = entity.pack ? entity.pack : "world";
 
     if (entity && this.magicItem.compatible(entity)) {
       this.magicItem.addEntity(entity, pack);
-      this.render();
+      // this.render();
     }
+
+    return this.itemWithSpellsItem.addSpellToItem(data.uuid);
   }
 
   isActive() {
@@ -407,12 +435,12 @@ export class MagicItemTab {
     this.magicItem.sort();
 
     let template = await renderTemplate("modules/magic-items-3/templates/magic-item-tab.html", this.magicItem);
-    let el = this.html.find(`.magic-items-content`);
-    if (el.length) {
-      el.replaceWith(template);
-    } else {
-      this.html.find(".tab.magic-items").append(template);
-    }
+    // let el = this.html.find(`.magic-items-content`);
+    // if (el.length) {
+    //   el.replaceWith(template);
+    // } else {
+    //   template.find(".tab.magic-items").append(template);
+    // }
 
     let magicItemEnabled = this.html.find(".magic-item-enabled");
     if (this.magicItem.enabled) {
@@ -480,28 +508,28 @@ export class MagicItemTab {
     return template;
   }
 
-  /**
-   * Ensure the item dropped is a spell, add the spell to the item flags.
-   * @returns Promise that resolves when the item has been modified
-   */
-  async _dragEnd(event) {
-    if (!this.app.isEditable) return;
-    log(false, "dragEnd", { event });
+  // /**
+  //  * Ensure the item dropped is a spell, add the spell to the item flags.
+  //  * @returns Promise that resolves when the item has been modified
+  //  */
+  // async _dragEnd(event) {
+  //   if (!this.app.isEditable) return;
+  //   log(false, "dragEnd", { event });
 
-    const data = TextEditor.getDragEventData(event);
-    log(false, "dragEnd", { data });
+  //   const data = TextEditor.getDragEventData(event);
+  //   log(false, "dragEnd", { data });
 
-    if (data.type !== "Item") return;
+  //   if (data.type !== "Item") return;
 
-    const item = fromUuidSync(data.uuid);
-    log(false, "dragEnd", { item });
+  //   const item = fromUuidSync(data.uuid);
+  //   log(false, "dragEnd", { item });
 
-    if (item.type !== "spell") return;
+  //   if (item.type !== "spell") return;
 
-    // set the flag to re-open this tab when the update completes
-    this._shouldOpenSpellsTab = true;
-    return this.itemWithSpellsItem.addSpellToItem(data.uuid);
-  }
+  //   // set the flag to re-open this tab when the update completes
+  //   this._shouldOpenSpellsTab = true;
+  //   return this.itemWithSpellsItem.addSpellToItem(data.uuid);
+  // }
 
   /**
    * Event Handler that opens the item's sheet
