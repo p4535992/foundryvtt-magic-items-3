@@ -17,9 +17,29 @@ export class OwnedMagicItem extends MagicItem {
 
     this.magicItemActor = magicItemActor;
 
-    this.ownedEntries = this.spells.map((item) => new OwnedMagicItemSpell(this, item));
-    this.ownedEntries = this.ownedEntries.concat(this.feats.map((item) => new OwnedMagicItemFeat(this, item)));
-    this.ownedEntries = this.ownedEntries.concat(this.tables.map((table) => new OwnedMagicItemTable(this, table)));
+    // this.ownedEntries = this.spells.map((item) => {
+    //     return new OwnedMagicItemSpell(this, item)
+    // });
+    // this.ownedEntries = this.ownedEntries.concat(this.feats.map((item) => {
+    //     return new OwnedMagicItemFeat(this, item)
+    // }));
+    // this.ownedEntries = this.ownedEntries.concat(this.tables.map((table) => {
+    //     return new OwnedMagicItemTable(this, table)
+    // }));
+
+    this.ownedEntries = this.itemSpellList.map((item) => {
+      return new OwnedMagicItemSpell(this, item);
+    });
+    this.ownedEntries = this.ownedEntries.concat(
+      this.itemFeatList.map((item) => {
+        return new OwnedMagicItemFeat(this, item);
+      })
+    );
+    this.ownedEntries = this.ownedEntries.concat(
+      this.itemTableList.map((table) => {
+        return new OwnedMagicItemTable(this, table);
+      })
+    );
 
     this.instrument();
   }
@@ -104,7 +124,7 @@ export class OwnedMagicItem extends MagicItem {
       r.evaluate({ async: false });
       destroyed = r.total === 1;
       r.toMessage({
-        flavor: `<b>${this.name}</b> ${game.i18n.localize("MAGICITEMS.MagicItemDestroyCheck")} 
+        flavor: `<b>${this.name}</b> ${game.i18n.localize("MAGICITEMS.MagicItemDestroyCheck")}
                           - ${
                             destroyed
                               ? game.i18n.localize("MAGICITEMS.MagicItemDestroyCheckFailure")
@@ -235,7 +255,7 @@ export class OwnedMagicItem extends MagicItem {
                       <img src="${this.img}" title="Palla di Fuoco" width="36" height="36" />
                       <h3 class="item-name">${this.name}</h3>
                   </header>
-      
+
                   <div class="card-content">${msg}</div>
               </div>`;
   }

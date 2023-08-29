@@ -41,7 +41,7 @@ export class ItemsWithSpells5eActorSheet {
 
     const spellbook = wrapped(data, nonItemSpells);
 
-    log("preparing spells", { spells, data, spellbook });
+    log("preparing spells " + spells + ", " + data + ", " + spellbook);
 
     const order = game.settings.get(CONSTANTS.MODULE_ID, "sortOrder") ? 20 : -5;
 
@@ -72,10 +72,6 @@ export class ItemsWithSpells5eActorSheet {
       // try {
       //   include = !!game.settings.get(CONSTANTS.MODULE_ID, `includeItemType${item.type.titleCase()}`);
       // } catch {}
-      let acceptedTypes = ["weapon", "equipment", "consumable", "tool", "backpack", "feat"];
-      if (acceptedTypes.includes(item.type)) {
-        include = true;
-      }
       return fl && include;
     });
 

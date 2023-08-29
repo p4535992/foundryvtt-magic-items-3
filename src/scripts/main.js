@@ -1,13 +1,19 @@
+import { setApi } from "../module";
+import API from "./API/api";
 import { warn, error, debug, i18nFormat, log } from "./lib/lib";
 import { MagicItemTab } from "./magicItemtab";
-import { ItemsWithSpells5eActor } from "./override/actor/v3/actor.js";
+import { MagicItemActor } from "./override/actor/v1/magicitemactor";
 import { ItemsWithSpells5eActorSheet } from "./override/actor/v3/actor-sheet.js";
 
 export const initHooks = () => {
-  ItemsWithSpells5eActorSheet.init();
+  //   ItemsWithSpells5eActorSheet.init();
+  MagicItemActor.init();
 };
 
-export const setupHooks = () => {};
+export const setupHooks = () => {
+  setApi(API);
+  window.MagicItems = API;
+};
 
 export const readyHooks = async () => {
   // Array.from(game.actors)
@@ -16,7 +22,8 @@ export const readyHooks = async () => {
   //     MagicItemActor.bind(actor);
   //   });
   MagicItemTab.init();
-  ItemsWithSpells5eActor.init();
+
+  //   ItemsWithSpells5eActor.init();
 };
 
 // Hooks.once("createActor", (actor) => {
@@ -41,9 +48,14 @@ export const readyHooks = async () => {
 // });
 
 Hooks.on("hotbarDrop", async (bar, data, slot) => {
-  if (data.type !== "MagicItem") {
+  //   if (data.type !== "MagicItem") {
+  //     return;
+  //   }
+
+  if (typeof data.flags.magicitems === "undefined" || !data.flags.magicitems.enabled) {
     return;
   }
+
   const command = `MagicItems.roll("${data.magicItemName}","${data.itemName}");`;
   let macro = game.macros.find((m) => m.name === data.name && m.command === command);
   if (!macro) {
@@ -61,34 +73,4 @@ Hooks.on("hotbarDrop", async (bar, data, slot) => {
   game.user.assignHotbarMacro(macro, slot);
 
   return false;
-});
-
-Hooks.on(`createItem`, (item) => {
-  if (item.actor) {
-    const actor = item.actor;
-    const miActor = MagicItemActor.get(actor.id);
-    if (miActor && miActor.listening && miActor.actor.id === actor.id) {
-      miActor.buildItems();
-    }
-  }
-});
-
-Hooks.on(`updateItem`, (item) => {
-  if (item.actor) {
-    const actor = item.actor;
-    const miActor = MagicItemActor.get(actor.id);
-    if (miActor && miActor.listening && miActor.actor.id === actor.id) {
-      setTimeout(miActor.buildItems.bind(miActor), 500);
-    }
-  }
-});
-
-Hooks.on(`deleteItem`, (item) => {
-  if (item.actor) {
-    const actor = item.actor;
-    const miActor = MagicItemActor.get(actor.id);
-    if (miActor && miActor.listening && miActor.actor.id === actor.id) {
-      miActor.buildItems();
-    }
-  }
 });

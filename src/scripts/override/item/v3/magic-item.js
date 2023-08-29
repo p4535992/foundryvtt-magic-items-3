@@ -45,7 +45,7 @@ const FakeEmptyTable = (uuid, parent) =>
     {
       name: game.i18n.localize("MAGICITEMS.MISSING_ITEM"),
       img: "icons/svg/hazard.svg",
-      type: "rolltable",
+      type: "rollTable",
       system: {
         description: {
           value: game.i18n.localize("MAGICITEMS.MISSING_ITEM_DESCRIPTION"),
@@ -230,7 +230,7 @@ export class MagicItem {
     // original could be in a compendium or on an actor
     let original = await fromUuid(uuid);
 
-    log("original", original);
+    log("original" + original);
 
     // return a fake 'empty' item if we could not create a childItem
     if (!original) {
@@ -268,7 +268,7 @@ export class MagicItem {
     });
     await childItem.updateSource(update);
 
-    log("getChildItem", childItem);
+    log("getChildItem" + childItem);
 
     return childItem;
   }
@@ -282,7 +282,7 @@ export class MagicItem {
     // original could be in a compendium or on an actor
     let original = await fromUuid(uuid);
 
-    log("original", original);
+    log("original" + original);
 
     // return a fake 'empty' item if we could not create a childItem
     if (!original) {
@@ -320,7 +320,7 @@ export class MagicItem {
     });
     await childItem.updateSource(update);
 
-    log("getChildItem", childItem);
+    log("getChildItem" + childItem);
 
     return childItem;
   }
@@ -334,7 +334,7 @@ export class MagicItem {
     // original could be in a compendium or on an actor
     let original = await fromUuid(uuid);
 
-    log("original", original);
+    log("original" + original);
 
     // return a fake 'empty' item if we could not create a childItem
     if (!original) {
@@ -372,7 +372,7 @@ export class MagicItem {
     });
     await childItem.updateSource(update);
 
-    log("getChildItem", childItem);
+    log("getChildItem" + childItem);
 
     return childItem;
   }
@@ -512,14 +512,21 @@ export class MagicItem {
       const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
         ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
         [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
-        ["system.preparation.mode"]: "magicitems", // "atwill",
+        ["system.preparation.mode"]: "atwill", // "magicitems", // "atwill",
         name: retrieveBabeleName(fullItemData),
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"baseLevel"}`]: parseInt(fullItemData.system.level),
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"level"}`]: parseInt(fullItemData.system.level),
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: parseInt(fullItemData.system.level),
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"upcast"}`]: parseInt(fullItemData.system.level),
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"upcastCost"}`]: 1,
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"dc"}`]: parseInt(fullItemData.system.attributes.spelldc), // TODO fullItemData.system.flatDc && fullItemData.system.dc : fullItemData.system.dc
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"flatDc"}`]: parseInt(fullItemData.system.attributes.dc),
       });
 
       const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
       uuid = newItem.uuid;
 
-      log("new item created", newItem);
+      log("new item created" + newItem);
     }
 
     const itemSpells = [...this.itemSpellList, { uuid }];
@@ -536,7 +543,7 @@ export class MagicItem {
   }
 
   /**
-   * Adds a given UUID to the item's spell list
+   * Adds a given UUID to the item's feat list
    * @param {string} providedUuid
    */
   async addFeatToItem(providedUuid) {
@@ -557,16 +564,18 @@ export class MagicItem {
       }
 
       const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
-        ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
+        ["flags.core.sourceId"]: uuid, // set the sourceId as the original feat
         [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
-        ["system.preparation.mode"]: "magicitems", // "atwill",
+        ["system.preparation.mode"]: "atwill", // "magicitems", // "atwill",
         name: retrieveBabeleName(fullItemData),
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"effect"}`]: "e1",
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: 1,
       });
 
       const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
       uuid = newItem.uuid;
 
-      log("new item created", newItem);
+      log("new item created" + newItem);
     }
 
     const itemFeats = [...this.itemFeatList, { uuid }];
@@ -583,7 +592,7 @@ export class MagicItem {
   }
 
   /**
-   * Adds a given UUID to the item's spell list
+   * Adds a given UUID to the item's table list
    * @param {string} providedUuid
    */
   async addTableToItem(providedUuid) {
@@ -604,16 +613,18 @@ export class MagicItem {
       }
 
       const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
-        ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
+        ["flags.core.sourceId"]: uuid, // set the sourceId as the original table
         [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
-        ["system.preparation.mode"]: "magicitems", // "atwill",
+        ["system.preparation.mode"]: "atwill", // "magicitems", // "atwill",
         name: retrieveBabeleName(fullItemData),
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"usage"}`]: fullItemData.system.usage,
+        [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: 1,
       });
 
-      const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
+      const [newItem] = await this.item.actor.createEmbeddedDocuments("RollTable", [adjustedItemData]);
       uuid = newItem.uuid;
 
-      log("new item created", newItem);
+      log("new item created" + newItem);
     }
 
     const itemTables = [...this.itemTableList, { uuid }];
@@ -670,16 +681,16 @@ export class MagicItem {
   }
 
   /**
-   * Removes the relationship between the provided item and this item's spells
+   * Removes the relationship between the provided item and this item's feats
    * @param {string} itemId - the id of the item to remove
    * @param {Object} options
-   * @param {boolean} [options.alsoDeleteEmbeddedFeat] - Should the spell be deleted also, only for owned items
-   * @returns {Item} the updated or deleted spell after having its parent item removed, or null
+   * @param {boolean} [options.alsoDeleteEmbeddedFeat] - Should the feat be deleted also, only for owned items
+   * @returns {Item} the updated or deleted feat after having its parent item removed, or null
    */
   async removeFeatFromItem(itemId, { alsoDeleteEmbeddedFeat } = {}) {
     const itemToDelete = this.itemFeatItemMap.get(itemId);
 
-    // If owned, we are storing the actual owned spell item's uuid. Else we store the source id.
+    // If owned, we are storing the actual owned feat item's uuid. Else we store the source id.
     const uuidToRemove = this.item.isOwned ? itemToDelete.uuid : itemToDelete.getFlag("core", "sourceId");
     const newItemFeats = this.itemFeatList.filter(({ uuid }) => uuid !== uuidToRemove);
 
@@ -692,11 +703,11 @@ export class MagicItem {
     // Nothing more to do for unowned items.
     if (!this.item.isOwned) return;
 
-    // remove the spell's `parentItem` flag
-    const spellItem = fromUuidSync(uuidToRemove);
+    // remove the feat's `parentItem` flag
+    const featItem = fromUuidSync(uuidToRemove);
 
     // the other item has already been deleted, probably do nothing.
-    if (!spellItem) return;
+    if (!featItem) return;
 
     const shouldDeleteFeat =
       alsoDeleteEmbeddedFeat &&
@@ -705,21 +716,21 @@ export class MagicItem {
         content: game.i18n.localize("MAGICITEMS.WARN_ALSO_DELETE"),
       }));
 
-    if (shouldDeleteFeat) return spellItem.delete();
-    else return spellItem.unsetFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem);
+    if (shouldDeleteFeat) return featItem.delete();
+    else return featItem.unsetFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem);
   }
 
   /**
-   * Removes the relationship between the provided item and this item's spells
+   * Removes the relationship between the provided item and this item's tables
    * @param {string} itemId - the id of the item to remove
    * @param {Object} options
-   * @param {boolean} [options.alsoDeleteEmbeddedTable] - Should the spell be deleted also, only for owned items
-   * @returns {Item} the updated or deleted spell after having its parent item removed, or null
+   * @param {boolean} [options.alsoDeleteEmbeddedTable] - Should the table be deleted also, only for owned items
+   * @returns {Item} the updated or deleted table after having its parent item removed, or null
    */
   async removeTableFromItem(itemId, { alsoDeleteEmbeddedTable } = {}) {
     const itemToDelete = this.itemTableItemMap.get(itemId);
 
-    // If owned, we are storing the actual owned spell item's uuid. Else we store the source id.
+    // If owned, we are storing the actual owned table item's uuid. Else we store the source id.
     const uuidToRemove = this.item.isOwned ? itemToDelete.uuid : itemToDelete.getFlag("core", "sourceId");
     const newItemTables = this.itemTableList.filter(({ uuid }) => uuid !== uuidToRemove);
 
@@ -732,11 +743,11 @@ export class MagicItem {
     // Nothing more to do for unowned items.
     if (!this.item.isOwned) return;
 
-    // remove the spell's `parentItem` flag
-    const spellItem = fromUuidSync(uuidToRemove);
+    // remove the table's `parentItem` flag
+    const tableItem = fromUuidSync(uuidToRemove);
 
     // the other item has already been deleted, probably do nothing.
-    if (!spellItem) return;
+    if (!tableItem) return;
 
     const shouldDeleteTable =
       alsoDeleteEmbeddedTable &&
@@ -745,8 +756,8 @@ export class MagicItem {
         content: game.i18n.localize("MAGICITEMS.WARN_ALSO_DELETE"),
       }));
 
-    if (shouldDeleteTable) return spellItem.delete();
-    else return spellItem.unsetFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem);
+    if (shouldDeleteTable) return tableItem.delete();
+    else return tableItem.unsetFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.parentItem);
   }
 
   /**
@@ -790,8 +801,8 @@ export class MagicItem {
 
   /**
    * Updates the given item's overrides
-   * @param {*} itemId - spell attached to this item
-   * @param {*} overrides - object describing the changes that should be applied to the spell
+   * @param {*} itemId - feat attached to this item
+   * @param {*} overrides - object describing the changes that should be applied to the feat
    */
   async updateItemFeatOverrides(itemId, overrides) {
     const itemFeatFlagsToUpdate = this.itemFeatFlagMap.get(itemId);
@@ -829,8 +840,8 @@ export class MagicItem {
 
   /**
    * Updates the given item's overrides
-   * @param {*} itemId - spell attached to this item
-   * @param {*} overrides - object describing the changes that should be applied to the spell
+   * @param {*} itemId - table attached to this item
+   * @param {*} overrides - object describing the changes that should be applied to the table
    */
   async updateItemTableOverrides(itemId, overrides) {
     const itemTableFlagsToUpdate = this.itemTableFlagMap.get(itemId);

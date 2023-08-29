@@ -17,6 +17,8 @@ import { initHooks, readyHooks, setupHooks } from "./scripts/main.js";
 import { error, i18n, warn } from "./scripts/lib/lib.js";
 import CONSTANTS from "./scripts/constants/constants.js";
 import API from "./scripts/API/api.js";
+import { MagicItemTab } from "./scripts/magicItemtab.js";
+import { MagicItemActor } from "./scripts/override/actor/v1/magicitemactor.js";
 
 /* ------------------------------------ */
 /* Initialize module					*/
@@ -105,29 +107,3 @@ export function getSocket() {
 Handlebars.registerHelper("enabled", function (value, options) {
   return Boolean(value) ? "" : "disabled";
 });
-
-window.MagicItems = {
-  actor: function (id) {
-    return MagicItemActor.get(id);
-  },
-
-  roll: function (magicItemName, itemName) {
-    const speaker = ChatMessage.getSpeaker();
-    let actor;
-    if (speaker.token) actor = game.actors.tokens[speaker.token];
-    if (!actor) actor = game.actors.get(speaker.actor);
-
-    const magicItemActor = actor ? MagicItemActor.get(actor.id) : null;
-    if (!magicItemActor) return ui.notifications.warn(game.i18n.localize("MAGICITEMS.WarnNoActor"));
-
-    magicItemActor.rollByName(magicItemName, itemName);
-  },
-
-  bindItemSheet: function (app, html, data) {
-    MagicItemTab.bind(app, html, data);
-  },
-
-  bindCharacterSheet: function (app, html, data) {
-    MagicItemSheet.bind(app, html, data);
-  },
-};

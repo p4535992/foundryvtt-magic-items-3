@@ -6,17 +6,17 @@ import { MagicItem } from "./override/item/v3/magic-item.js";
 const magicItemTabs = [];
 
 export class MagicItemTab {
-  static bind(app, html, item) {
-    let acceptedTypes = ["weapon", "equipment", "consumable", "tool", "backpack", "feat"];
-    if (acceptedTypes.includes(item.document.type)) {
-      let tab = magicItemTabs[app.id];
-      if (!tab) {
-        tab = new MagicItemTab(app);
-        magicItemTabs[app.id] = tab;
-      }
-      tab.init(html, item);
-    }
-  }
+  //   static bind(app, html, item) {
+  //     let acceptedTypes = ["weapon", "equipment", "consumable", "tool", "backpack", "feat"];
+  //     if (acceptedTypes.includes(item.document.type)) {
+  //       let tab = magicItemTabs[app.id];
+  //       if (!tab) {
+  //         tab = new MagicItemTab(app);
+  //         magicItemTabs[app.id] = tab;
+  //       }
+  //       tab.init(app, html, item);
+  //     }
+  //   }
 
   /** A boolean to set when we are causing an item update we know should re-open to this tab */
   _shouldOpenSpellsTab = false;
@@ -61,9 +61,7 @@ export class MagicItemTab {
         return;
       }
 
-      log(false, {
-        instances: this.instances,
-      });
+      log("instance item " + this.instances);
 
       if (this.instances.get(app.appId)) {
         const instance = this.instances.get(app.appId);
