@@ -1,7 +1,7 @@
 import { MAGICITEMS } from "./config.js";
 import { log } from "./lib/lib.js";
-import { MagicItemSpellOverrides } from "./override/item/item-form-spell-overrides.js";
-import { MagicItem } from "./override/item/magic-item.js";
+import { MagicItemSpellOverrides } from "./override/item/v3/item-form-spell-overrides.js";
+import { MagicItem } from "./override/item/v3/magic-item.js";
 
 const magicItemTabs = [];
 
@@ -26,7 +26,7 @@ export class MagicItemTab {
     this.item = app.item;
     this.sheetHtml = html;
 
-    // this.hack(this.app);
+    this.hack(this.app);
     this.activate = false;
     this.html = html;
 
@@ -103,7 +103,7 @@ export class MagicItemTab {
   }
 
   init(html, data) {
-    
+
     if (html[0].localName !== "div") {
       html = $(html[0].parentElement.parentElement);
     }
@@ -146,7 +146,6 @@ export class MagicItemTab {
   }
   */
 
-  /*
   hack(app) {
     let tab = this;
     app.setPosition = function (position = {}) {
@@ -154,7 +153,6 @@ export class MagicItemTab {
       return this.__proto__.__proto__.setPosition.apply(this, [position]);
     };
   }
-  */
 
   /*
   async render() {
@@ -640,7 +638,7 @@ export class MagicItemTab {
                 drop: this._onDrop.bind(this),
               },
             });
-      
+
             this.app._dragDrop.push(dragDrop);
             dragDrop.bind(this.app.form);
             */

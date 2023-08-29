@@ -1,5 +1,5 @@
 import { OwnedMagicItem } from "./magicitem.js";
-import { MAGICITEMS } from "./config.js";
+import { MAGICITEMS } from "../../../config.js";
 
 /**
  * "Aspect" class that dynamically extends the original Actor in order to handle magic items.

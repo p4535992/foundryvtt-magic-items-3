@@ -127,3 +127,23 @@ export function isEmptyObject(obj) {
     Object.keys(obj).length === 0; // || Object.getPrototypeOf(obj) === Object.prototype);
   return result;
 }
+
+export function retrieveFlag(item, flagNamespace, flagKey) {
+  try {
+    return item.getFlag(flagNamespace, flagKey);
+  } catch (e) {
+    return getProperty(item, `flags.${flagNamespace}.${flagKey}`);
+  }
+}
+
+export function retrieveBabeleName(entity) {
+  // let name =
+  //   game.babele && entity.getFlag("babele", "hasTranslation")
+  //     ? entity.getFlag("babele", "originalName")
+  //     : entity.name;
+  let name =
+    game.babele && retrieveFlag(entity, "babele", "hasTranslation")
+      ? retrieveFlag(entity, "babele", "originalName")
+      : entity.name;
+  return name;
+}

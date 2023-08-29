@@ -1,5 +1,5 @@
-import { MAGICITEMS } from "./config.js";
-import { MagicItemActor } from "./magicitemactor.js";
+import { MAGICITEMS } from "../../../config.js";
+import { MagicItemActor } from "../../actor/v1/magicitemactor.js";
 
 const magicItemSheets = [];
 

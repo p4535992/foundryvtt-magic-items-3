@@ -1,7 +1,7 @@
 import { warn, error, debug, i18nFormat, log } from "./lib/lib";
 import { MagicItemTab } from "./magicItemtab";
-import { ItemsWithSpells5eActor } from "./override/actor/actor";
-import { ItemsWithSpells5eActorSheet } from "./override/actor/actor-sheet";
+import { ItemsWithSpells5eActor } from "./override/actor/v3/actor.js";
+import { ItemsWithSpells5eActorSheet } from "./override/actor/v3/actor-sheet.js";
 
 export const initHooks = () => {
   ItemsWithSpells5eActorSheet.init();

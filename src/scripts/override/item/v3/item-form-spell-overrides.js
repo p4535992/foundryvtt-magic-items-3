@@ -1,5 +1,4 @@
-import CONSTANTS from "../../constants/constants.js";
-import { ItemsWithSpells5e } from "./magic-item.js";
+import CONSTANTS from "../../../constants/constants.js";
 
 /**
  * The form to control Item Spell overrides (e.g. for consumption logic)

@@ -1,5 +1,5 @@
-import CONSTANTS from "../../constants/constants";
-import { log } from "../../lib/lib";
+import CONSTANTS from "../../../constants/constants";
+import { log, retrieveFlag } from "../../../lib/lib";
 
 /**
  * A class made to make managing the operations for an Actor.
@@ -64,13 +64,9 @@ export class ItemsWithSpells5eActorSheet {
     );
 
     const itemsWithSpells = this.actor.items.filter((item) => {
-      let fl = null;
-      try {
-        fl = item.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells)?.length;
-      } catch (e) {
-        fl = getProperty(item, `flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.itemSpells}`)?.length;
-      }
       // const fl = item.getFlag(CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells)?.length;
+      const f = retrieveFlag(item, CONSTANTS.MODULE_FLAG, CONSTANTS.FLAGS.itemSpells);
+      const fl = f?.length;
       let include = false;
       // TODO
       // try {

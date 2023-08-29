@@ -112,7 +112,7 @@
                             {{/select}}
                         </select>
                     </div>
-                    
+
                     <div class="item-detail">
                         <input class="spell-consumption" type="text" name="flags.magicitems.item-spells.{{i}}.consumption" value="{{item.consumption}}">
                     </div>
@@ -144,7 +144,7 @@
                         <span title="{{labels.save}}">{{labels.save}}</span>
                         {{/if}}
                     </div>
-              
+
                     <div class="item-detail">
                         {{#if (gt item.system.uses.max 0)}}
                         {{item.system.uses.max}}
@@ -152,31 +152,31 @@
                         {{lookup @root/config.limitedUsePeriods item.system.uses.per}}
                         {{/if}}
                     </div>
-              
+
                     <div class="item-detail">
                         {{#if (gt item.system.consume.amount 0)}}
                         {{item.system.consume.amount}}
                         {{localize 'DND5E.Charges'}}
                         {{/if}}
                     </div>
-            
+
                     <div class="item-controls flexrow">
                         {{#if @root/isOwner}}
                             <a class="item-control configure-overrides item-spell"
                                 data-tooltip="{{#unless @root/isOwned}}MAGICITEMS.ConfigureOverrides{{else}}MAGICITEMS.Configure{{/unless}}">
                                 <i class="fas fa-edit" data-spell-idx="{{i}}"></i>
                             </a>
-                
+
                             {{#if @root/isOwned}}
                             <a class="item-control item-destroy item-spell" data-tooltip="MAGICITEMS.DeleteSpell">
                                 <i class="fas fa-trash" data-spell-idx="{{i}}"></i>
                             </a>
                             {{else}}
                             <a class="item-control item-delete item-spell" data-tooltip="MAGICITEMS.RemoveLink">
-                                <i class="fas {{#if @root/isOwned}}fa-link-slash{{else}}fa-trash{{/if}}" data-spell-idx="{{i}}"></i>
+                                <i class="fas {{#if @root/isOwned}}fa-link-slash{{else}}fa-unlink{{/if}}" data-spell-idx="{{i}}"></i>
                             </a>
                             {{/if}}
-              
+
                         {{/if}}
                     </div>
                 </li>
@@ -191,5 +191,5 @@
         </li>
     {{/if}}
 
-    </div>    
-</div>    
+    </div>
+</div>
