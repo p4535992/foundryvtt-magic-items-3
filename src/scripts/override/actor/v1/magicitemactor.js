@@ -8,24 +8,32 @@ import { error } from "jquery";
  * "Aspect" class that dynamically extends the original Actor in order to handle magic items.
  */
 export class MagicItemActor {
-  //   /**
-  //    * Create and register a new MagicItemActor.
-  //    *
-  //    * @param actor
-  //    */
-  //   static bind(actor) {
-  //     MAGICITEMS.actors[actor.id] = new MagicItemActor(actor);
-  //   }
+  /**
+   * Create and register a new MagicItemActor.
+   *
+   * @param actor
+   */
+  static bind(actor) {
+    MAGICITEMS.actors[actor.id] = new MagicItemActor(actor);
+  }
 
-  //   /**
-  //    * Get a registered MagicItemActor.
-  //    *
-  //    * @param actorId   id of the original actor.
-  //    * @returns {*}     the MagicItemActor associated with the actor by actorId.
-  //    */
-  //   static get(actorId) {
-  //     return MAGICITEMS.actors[actorId];
-  //   }
+  /**
+   * Get a registered MagicItemActor.
+   *
+   * @param actorId   id of the original actor.
+   * @returns {*}     the MagicItemActor associated with the actor by actorId.
+   */
+  static get(actorId) {
+    let magicItemActor = MAGICITEMS.actors[actorId];
+    if (MAGICITEMS.bind(game.actors.get(actorId))) {
+      magicItemActor = MAGICITEMS.actors[actorId];
+    }
+    //   let magicItemActor = null;
+    //   if(game.actors.get(actorId)) {
+    //     magicItemActor = new MagicItemActor(actor);
+    //   }
+    return magicItemActor;
+  }
 
   /**
    * ctor. Builds a new instance of a MagicItemActor
@@ -56,6 +64,19 @@ export class MagicItemActor {
    * Handles the item sheet render hook
    */
   static init() {
+    Hooks.once("createActor", (actor) => {
+      if (actor.permission >= 2) {
+        MagicItemActor.bind(actor);
+      }
+    });
+
+    Hooks.on(`renderActorSheet5eCharacter`, (app, html, data) => {
+      MagicItemSheet.bind(app, html, data);
+    });
+
+    Hooks.on(`renderActorSheet5eNPC`, (app, html, data) => {
+      MagicItemSheet.bind(app, html, data);
+    });
     // Hooks.on(`createItem`, (item) => {
     //   if (item.actor) {
     //     const actor = item.actor;
@@ -137,16 +158,6 @@ export class MagicItemActor {
     //     return newInstance.renderLite(data);
     // });
   }
-
-  //   /**
-  //    * Get a registered MagicItemActor.
-  //    *
-  //    * @param actorId   id of the original actor.
-  //    * @returns {*}     the MagicItemActor associated with the actor by actorId.
-  //    */
-  //   static get(actorId) {
-  //     return MAGICITEMS.actors[actorId];
-  //   }
 
   /**
    * Add change listeners.
@@ -734,7 +745,7 @@ export class MagicItemActor {
 
     log("addChildTablesToActor", itemTableData);
 
-    return itemCreated.parent.createEmbeddedDocuments("Item", itemTableData);
+    return itemCreated.parent.createEmbeddedDocuments("RollTable", itemTableData);
   };
 
   /* ===================================== */

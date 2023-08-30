@@ -1,3 +1,5 @@
+import { MagicItemEntry } from "./magic-item-entry";
+
 export class MagicItemSpell extends MagicItemEntry {
   constructor(data) {
     super(data);
@@ -61,6 +63,7 @@ export class MagicItemSpell extends MagicItemEntry {
       baseLevel: this.baseLevel,
       consumption: this.consumption,
       id: this.id,
+      uuid: this.uuid,
       img: this.img,
       level: this.level,
       name: this.name,
@@ -71,5 +74,72 @@ export class MagicItemSpell extends MagicItemEntry {
       dc: this.dc,
       uses: this.uses,
     };
+  }
+
+  async roll() {
+    let upcastLevel = this.item.level;
+    let consumption = this.item.consumption;
+
+    if (!this.ownedItem) {
+      let data = await this.item.data();
+
+      if (typeof data.system.save.scaling === "undefined") {
+        data = mergeObject(data, {
+          "system.save.scaling": "spell",
+        });
+      }
+
+      if (this.item.flatDc) {
+        data = mergeObject(data, {
+          "system.save.scaling": "flat",
+          "system.save.dc": this.item.dc,
+        });
+      }
+
+      data = mergeObject(data, {
+        "system.preparation": { mode: "magicitems" },
+      });
+
+      const cls = CONFIG.Item.documentClass;
+      this.ownedItem = new cls(data, { parent: this.actor });
+      this.ownedItem.prepareFinalAttributes();
+    }
+
+    if (this.item.canUpcast()) {
+      const spellFormData = await MagicItemUpcastDialog.create(this, this.item); // TODO
+      upcastLevel = parseInt(spellFormData.get("level"));
+      consumption = parseInt(spellFormData.get("consumption"));
+    }
+
+    let proceed = async () => {
+      let spell = this.ownedItem;
+      if (upcastLevel !== spell.system.level) {
+        spell = spell.clone({ "system.level": upcastLevel }, { keepId: true });
+        spell.prepareFinalAttributes();
+      }
+
+      let chatData = await spell.use(
+        {},
+        {
+          configureDialog: false,
+          createMessage: false,
+        }
+      );
+      ChatMessage.create(
+        mergeObject(chatData, {
+          "flags.dnd5e.itemData": this.ownedItem.toJSON(),
+        })
+      );
+      this.consume(consumption);
+      this.update();
+    };
+
+    if (this.hasCharges(consumption)) {
+      await proceed();
+    } else {
+      this.showNoChargesMessage(() => {
+        proceed();
+      });
+    }
   }
 }

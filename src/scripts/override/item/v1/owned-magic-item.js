@@ -1,6 +1,9 @@
+import { MagicItem } from "../v3/magic-item";
+
 export class OwnedMagicItem extends MagicItem {
   constructor(item, actor, magicItemActor) {
-    super(item.flags.magicitems);
+    // super(item.flags.magicitems);
+    super(item);
     this.id = item.id;
     this.item = item;
     this.actor = actor;

@@ -2,6 +2,9 @@ import { MAGICITEMS } from "../../../config.js";
 import CONSTANTS from "../../../constants/constants.js";
 import { log, error, retrieveFlag, retrieveBabeleName } from "../../../lib/lib.js";
 import { MagicItemTab } from "../../../magicItemtab.js";
+import { MagicItemSpell } from "../v1/magic-Item-spell.js";
+import { MagicItemFeat } from "../v1/magic-item-feat.js";
+import { MagicItemTable } from "../v1/magic-item-table.js";
 
 /**
  * Creates a fake temporary item as filler for when a UUID is unable to resolve an item
@@ -523,7 +526,8 @@ export class MagicItem {
         [`flags.${CONSTANTS.MODULE_FLAG}.${"flatDc"}`]: parseInt(fullItemData.system.attributes.dc),
       });
 
-      const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
+      // const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
+      const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [new MagicItemSpell(adjustedItemData)]);
       uuid = newItem.uuid;
 
       log("new item created" + newItem);
@@ -572,7 +576,8 @@ export class MagicItem {
         [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: 1,
       });
 
-      const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
+      //   const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
+      const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [new MagicItemFeat(adjustedItemData)]);
       uuid = newItem.uuid;
 
       log("new item created" + newItem);
@@ -621,7 +626,10 @@ export class MagicItem {
         [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: 1,
       });
 
-      const [newItem] = await this.item.actor.createEmbeddedDocuments("RollTable", [adjustedItemData]);
+      //   const [newItem] = await this.item.actor.createEmbeddedDocuments("RollTable", [adjustedItemData]);
+      const [newItem] = await this.item.actor.createEmbeddedDocuments("RollTable", [
+        new MagicItemTable(adjustedItemData),
+      ]);
       uuid = newItem.uuid;
 
       log("new item created" + newItem);
