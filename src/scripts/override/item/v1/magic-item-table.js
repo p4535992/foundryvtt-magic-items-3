@@ -24,11 +24,13 @@ export class MagicItemTable extends MagicItemEntry {
       if (entity) {
         let item = (await actor.createEmbeddedDocuments("Item", [entity]))[0];
         const chatData = await item.use({}, { createMessage: false });
-        ChatMessage.create(
-          mergeObject(chatData, {
-            "flags.dnd5e.itemData": item,
-          })
-        );
+        if (chatData) {
+          ChatMessage.create(
+            mergeObject(chatData, {
+              "flags.dnd5e.itemData": item,
+            })
+          );
+        }
       }
     }
   }

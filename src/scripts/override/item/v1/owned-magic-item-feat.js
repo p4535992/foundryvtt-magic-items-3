@@ -39,11 +39,13 @@ export class OwnedMagicItemFeat extends AbstractOwnedEntry {
           configureDialog: false,
         }
       );
-      ChatMessage.create(
-        mergeObject(chatData, {
-          "flags.dnd5e.itemData": this.ownedItem.toJSON(),
-        })
-      );
+      if (chatData) {
+        ChatMessage.create(
+          mergeObject(chatData, {
+            "flags.dnd5e.itemData": this.ownedItem.toJSON(),
+          })
+        );
+      }
       onUsage();
       this.magicItem.update();
     };

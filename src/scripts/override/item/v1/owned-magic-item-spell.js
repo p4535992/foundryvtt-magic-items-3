@@ -48,11 +48,13 @@ export class OwnedMagicItemSpell extends AbstractOwnedEntry {
           createMessage: false,
         }
       );
-      ChatMessage.create(
-        mergeObject(chatData, {
-          "flags.dnd5e.itemData": this.ownedItem.toJSON(),
-        })
-      );
+      if (chatData) {
+        ChatMessage.create(
+          mergeObject(chatData, {
+            "flags.dnd5e.itemData": this.ownedItem.toJSON(),
+          })
+        );
+      }
       this.consume(consumption);
       this.magicItem.update();
     };
