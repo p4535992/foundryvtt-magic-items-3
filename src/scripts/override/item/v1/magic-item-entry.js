@@ -3,6 +3,7 @@ export class MagicItemEntry {
     mergeObject(this, data);
 
     let item = this;
+    this.item = item;
     this.uses = parseInt("uses" in item.flags.magicitems ? item.flags.magicitems.uses : this.charges);
 
     this.rechargeableLabel = this.rechargeable

@@ -1,6 +1,6 @@
 import { MAGICITEMS } from "../../../config.js";
 import CONSTANTS from "../../../constants/constants.js";
-import { log, error, retrieveFlag, retrieveBabeleName } from "../../../lib/lib.js";
+import { log, error, retrieveFlag, retrieveBabeleName, is_real_number } from "../../../lib/lib.js";
 import { MagicItemTab } from "../../../magicItemtab.js";
 import { MagicItemSpell } from "../v1/magic-Item-spell.js";
 import { MagicItemFeat } from "../v1/magic-item-feat.js";
@@ -250,8 +250,7 @@ export class MagicItem {
     const fixedChanges = {
       ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
       [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
-      ["system.preparation.mode"]: "magicitems", // "atwill",
-      name: retrieveBabeleName(fullItemData),
+      ["system.preparation.mode"]: "atwill",
     };
 
     const update = foundry.utils.mergeObject(changes, fixedChanges);
@@ -302,8 +301,7 @@ export class MagicItem {
     const fixedChanges = {
       ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
       [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
-      ["system.preparation.mode"]: "magicitems", // "atwill",
-      name: retrieveBabeleName(fullItemData),
+      ["system.preparation.mode"]: "atwill",
     };
 
     const update = foundry.utils.mergeObject(changes, fixedChanges);
@@ -354,8 +352,7 @@ export class MagicItem {
     const fixedChanges = {
       ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
       [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
-      ["system.preparation.mode"]: "magicitems", // "atwill",
-      name: retrieveBabeleName(fullItemData),
+      ["system.preparation.mode"]: "atwill",
     };
 
     const update = foundry.utils.mergeObject(changes, fixedChanges);
@@ -499,39 +496,54 @@ export class MagicItem {
     // MUTATED if this is an owned item
     let uuid = providedUuid.uuid ? providedUuid.uuid : providedUuid;
 
-    if (this.item.isOwned) {
-      // if this item is already on an actor, we need to
-      // 0. see if the uuid is already on the actor
-      // 1. create the dropped uuid on the Actor's item list (OR update that item to be a child of this one)
-      // 2. get the new uuid from the created item
-      // 3. add that uuid to this item's flags\
-      const fullItemData = await fromUuid(uuid);
+    // if (this.item.isOwned) {
+    //   // if this item is already on an actor, we need to
+    //   // 0. see if the uuid is already on the actor
+    //   // 1. create the dropped uuid on the Actor's item list (OR update that item to be a child of this one)
+    //   // 2. get the new uuid from the created item
+    //   // 3. add that uuid to this item's flags\
+    //   const fullItemData = await fromUuid(uuid);
 
-      if (!fullItemData) {
-        ui.notifications.error("Item data for", uuid, "not found");
-        return;
-      }
+    //   if (!fullItemData) {
+    //     ui.notifications.error("Item data for", uuid, "not found");
+    //     return;
+    //   }
 
-      const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
-        ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
-        [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
-        ["system.preparation.mode"]: "atwill", // "magicitems", // "atwill",
-        name: retrieveBabeleName(fullItemData),
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"baseLevel"}`]: parseInt(fullItemData.system.level),
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"level"}`]: parseInt(fullItemData.system.level),
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: parseInt(fullItemData.system.level),
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"upcast"}`]: parseInt(fullItemData.system.level),
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"upcastCost"}`]: 1,
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"dc"}`]: parseInt(fullItemData.system.attributes.spelldc), // TODO fullItemData.system.flatDc && fullItemData.system.dc : fullItemData.system.dc
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"flatDc"}`]: parseInt(fullItemData.system.attributes.dc),
-      });
+    //   const isFlatDc = fullItemData.system.save.scaling === "flat" || fullItemData.system.flatDc;
+    //   const spellDcValue = this.item.getSaveDC(); // fullItemData.system.attributes?.spelldc ? fullItemData.system.attributes?.spelldc : undefined;
 
-      // const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
-      const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [new MagicItemSpell(adjustedItemData)]);
-      uuid = newItem.uuid;
+    //   const flatDcValue = isFlatDc
+    //     ? (fullItemData.system.flatDc && fullItemData.system.dc ? fullItemData.system.dc : spellDcValue)
+    //     : null;
 
-      log("new item created" + newItem);
-    }
+    //   let dcValue = isFlatDc
+    //     ? (fullItemData.system.dc ? fullItemData.system.dc : fullItemData.system.save?.dc)
+    //     : (spellDcValue ? spellDcValue : fullItemData.system.save?.dc);
+
+    //   if(!dcValue || !is_real_number(dcValue)) {
+    //     dcValue = spellDcValue;
+    //   }
+
+    //   const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
+    //     ["flags.core.sourceId"]: uuid, // set the sourceId as the original spell
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
+    //     ["system.preparation.mode"]: "atwill", // "magicitems", // "atwill",
+    //     name: retrieveBabeleName(fullItemData),
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"baseLevel"}`]: parseInt(fullItemData.system.level),
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"level"}`]: parseInt(fullItemData.system.level),
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: parseInt(fullItemData.system.level),
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"upcast"}`]: parseInt(fullItemData.system.level),
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"upcastCost"}`]: 1,
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"dc"}`]: parseInt(dcValue), // TODO fullItemData.system.flatDc && fullItemData.system.dc : fullItemData.system.dc
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"flatDc"}`]: isFlatDc ? parseInt(flatDcValue) : null,
+    //   });
+
+    //   // const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
+    //   const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [new MagicItemSpell(adjustedItemData)]);
+    //   uuid = newItem.uuid;
+
+    //   log("new item created" + newItem);
+    // }
 
     const itemSpells = [...this.itemSpellList, { uuid }];
 
@@ -554,34 +566,34 @@ export class MagicItem {
     // MUTATED if this is an owned item
     let uuid = providedUuid.uuid ? providedUuid.uuid : providedUuid;
 
-    if (this.item.isOwned) {
-      // if this item is already on an actor, we need to
-      // 0. see if the uuid is already on the actor
-      // 1. create the dropped uuid on the Actor's item list (OR update that item to be a child of this one)
-      // 2. get the new uuid from the created item
-      // 3. add that uuid to this item's flags\
-      const fullItemData = await fromUuid(uuid);
+    // if (this.item.isOwned) {
+    //   // if this item is already on an actor, we need to
+    //   // 0. see if the uuid is already on the actor
+    //   // 1. create the dropped uuid on the Actor's item list (OR update that item to be a child of this one)
+    //   // 2. get the new uuid from the created item
+    //   // 3. add that uuid to this item's flags\
+    //   const fullItemData = await fromUuid(uuid);
 
-      if (!fullItemData) {
-        ui.notifications.error("Item data for", uuid, "not found");
-        return;
-      }
+    //   if (!fullItemData) {
+    //     ui.notifications.error("Item data for", uuid, "not found");
+    //     return;
+    //   }
 
-      const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
-        ["flags.core.sourceId"]: uuid, // set the sourceId as the original feat
-        [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
-        ["system.preparation.mode"]: "atwill", // "magicitems", // "atwill",
-        name: retrieveBabeleName(fullItemData),
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"effect"}`]: "e1",
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: 1,
-      });
+    //   const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
+    //     ["flags.core.sourceId"]: uuid, // set the sourceId as the original feat
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
+    //     ["system.preparation.mode"]: "atwill", // "magicitems", // "atwill",
+    //     name: retrieveBabeleName(fullItemData),
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"effect"}`]: "e1",
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: 1,
+    //   });
 
-      //   const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
-      const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [new MagicItemFeat(adjustedItemData)]);
-      uuid = newItem.uuid;
+    //   //   const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [adjustedItemData]);
+    //   const [newItem] = await this.item.actor.createEmbeddedDocuments("Item", [new MagicItemFeat(adjustedItemData)]);
+    //   uuid = newItem.uuid;
 
-      log("new item created" + newItem);
-    }
+    //   log("new item created" + newItem);
+    // }
 
     const itemFeats = [...this.itemFeatList, { uuid }];
 
@@ -604,36 +616,36 @@ export class MagicItem {
     // MUTATED if this is an owned item
     let uuid = providedUuid.uuid ? providedUuid.uuid : providedUuid;
 
-    if (this.item.isOwned) {
-      // if this item is already on an actor, we need to
-      // 0. see if the uuid is already on the actor
-      // 1. create the dropped uuid on the Actor's item list (OR update that item to be a child of this one)
-      // 2. get the new uuid from the created item
-      // 3. add that uuid to this item's flags\
-      const fullItemData = await fromUuid(uuid);
+    // if (this.item.isOwned) {
+    //   // if this item is already on an actor, we need to
+    //   // 0. see if the uuid is already on the actor
+    //   // 1. create the dropped uuid on the Actor's item list (OR update that item to be a child of this one)
+    //   // 2. get the new uuid from the created item
+    //   // 3. add that uuid to this item's flags\
+    //   const fullItemData = await fromUuid(uuid);
 
-      if (!fullItemData) {
-        ui.notifications.error("Item data for", uuid, "not found");
-        return;
-      }
+    //   if (!fullItemData) {
+    //     ui.notifications.error("Item data for", uuid, "not found");
+    //     return;
+    //   }
 
-      const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
-        ["flags.core.sourceId"]: uuid, // set the sourceId as the original table
-        [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
-        ["system.preparation.mode"]: "atwill", // "magicitems", // "atwill",
-        name: retrieveBabeleName(fullItemData),
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"usage"}`]: fullItemData.system.usage,
-        [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: 1,
-      });
+    //   const adjustedItemData = foundry.utils.mergeObject(fullItemData.toObject(), {
+    //     ["flags.core.sourceId"]: uuid, // set the sourceId as the original table
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${CONSTANTS.FLAGS.parentItem}`]: this.item.uuid,
+    //     ["system.preparation.mode"]: "atwill", // "magicitems", // "atwill",
+    //     name: retrieveBabeleName(fullItemData),
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"usage"}`]: fullItemData.system.usage,
+    //     [`flags.${CONSTANTS.MODULE_FLAG}.${"consumption"}`]: 1,
+    //   });
 
-      //   const [newItem] = await this.item.actor.createEmbeddedDocuments("RollTable", [adjustedItemData]);
-      const [newItem] = await this.item.actor.createEmbeddedDocuments("RollTable", [
-        new MagicItemTable(adjustedItemData),
-      ]);
-      uuid = newItem.uuid;
+    //   //   const [newItem] = await this.item.actor.createEmbeddedDocuments("RollTable", [adjustedItemData]);
+    //   const [newItem] = await this.item.actor.createEmbeddedDocuments("RollTable", [
+    //     new MagicItemTable(adjustedItemData),
+    //   ]);
+    //   uuid = newItem.uuid;
 
-      log("new item created" + newItem);
-    }
+    //   log("new item created" + newItem);
+    // }
 
     const itemTables = [...this.itemTableList, { uuid }];
 
@@ -1027,8 +1039,7 @@ export class MagicItem {
 
   get empty() {
     //return this.spells.length === 0 && this.feats.length === 0 && this.tables.length === 0;
-
-    this._itemSpellFlagMap.size === 0 && this._itemFeatFlagMap.size === 0 && this._itemTableFlagMap == 0;
+    return this._itemSpellFlagMap.size === 0 && this._itemFeatFlagMap.size === 0 && this._itemTableFlagMap.size == 0;
   }
 
   get chargesOnWholeItem() {

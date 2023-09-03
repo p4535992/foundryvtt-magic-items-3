@@ -147,3 +147,7 @@ export function retrieveBabeleName(entity) {
       : entity.name;
   return name;
 }
+
+export function is_real_number(inNumber) {
+  return !isNaN(inNumber) && typeof inNumber === "number" && isFinite(inNumber);
+}

@@ -422,6 +422,7 @@ export class MagicItemTab {
       },
       isOwner: this.item.isOwner,
       isOwned: this.item.isOwned,
+      isEmpty: this.itemWithSpellsItem.empty,
     });
 
     this.magicItem.sort();

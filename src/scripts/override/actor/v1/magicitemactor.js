@@ -1,21 +1,22 @@
-import { log, warn } from "../../../lib/lib.js";
+import { log, retrieveFlag, warn } from "../../../lib/lib.js";
 import CONSTANTS from "../../../constants/constants.js";
 import { OwnedMagicItem } from "../../item/v1/owned-magic-item.js";
 import { MagicItemSheet } from "../../item/v1/magicitemsheet.js";
 import { error } from "jquery";
+import { MAGICITEMS } from "../../../config.js";
 
 /**
  * "Aspect" class that dynamically extends the original Actor in order to handle magic items.
  */
 export class MagicItemActor {
-  /**
-   * Create and register a new MagicItemActor.
-   *
-   * @param actor
-   */
-  static bind(actor) {
-    MAGICITEMS.actors[actor.id] = new MagicItemActor(actor);
-  }
+  // /**
+  //  * Create and register a new MagicItemActor.
+  //  *
+  //  * @param actor
+  //  */
+  // static bind(actor) {
+  //   MAGICITEMS.actors[actor.id] = new MagicItemActor(actor);
+  // }
 
   /**
    * Get a registered MagicItemActor.
@@ -24,14 +25,15 @@ export class MagicItemActor {
    * @returns {*}     the MagicItemActor associated with the actor by actorId.
    */
   static get(actorId) {
-    let magicItemActor = MAGICITEMS.actors[actorId];
-    if (MAGICITEMS.bind(game.actors.get(actorId))) {
-      magicItemActor = MAGICITEMS.actors[actorId];
+    // let magicItemActor = MAGICITEMS.actors[actorId];
+    // if (MAGICITEMS.bind(game.actors.get(actorId))) {
+    //   magicItemActor = MAGICITEMS.actors[actorId];
+    // }
+    const actor = game.actors.get(actorId);
+    let magicItemActor = null;
+    if (actor) {
+      magicItemActor = new MagicItemActor(actor);
     }
-    //   let magicItemActor = null;
-    //   if(game.actors.get(actorId)) {
-    //     magicItemActor = new MagicItemActor(actor);
-    //   }
     return magicItemActor;
   }
 
@@ -52,7 +54,7 @@ export class MagicItemActor {
       this.html = html;
     }
 
-    this.id = actor.id;
+    this.id = this.actor.id;
     this.listeners = [];
     this.destroyed = [];
     this.listening = true;
